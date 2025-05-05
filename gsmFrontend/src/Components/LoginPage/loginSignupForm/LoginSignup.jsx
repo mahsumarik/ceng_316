@@ -7,6 +7,9 @@ import logo from "../../../assets/iyteLogo.png";
 import { registerStudent, loginStudent } from "../../../services/authService";
 import { useAuth } from "../../../context/AuthContext";
 
+import { toast } from "react-toastify";
+import ForgotPasswordModal from "./ForgotPasswordModal";
+
 const ROLE = {
   STUDENT: "STUDENT",
   ADVISOR: "ADVISOR",
@@ -20,6 +23,7 @@ function LoginSignup() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
+  const [showModal, setShowModal] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -35,50 +39,56 @@ function LoginSignup() {
     setFormData((prev) => ({ ...prev, [id]: value }));
   };
 
-  // --------------------- SIGN‑UP ---------------------
   const handleSignup = async (e) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match");
+      toast.error("Passwords do not match");
       return;
     }
     try {
       setLoading(true);
       await registerStudent(formData);
-      alert("Registration successful — now you can log in");
+      toast.success("Registration successful — now you can log in");
       setActiveTab("login");
     } catch (err) {
-      alert(err.response?.data || "Registration failed");
+      toast.error(err.response?.data || "Registration failed");
     } finally {
       setLoading(false);
     }
   };
 
-  // --------------------- LOGIN ----------------------
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
       setLoading(true);
       const res = await loginStudent(formData.email, formData.password);
       login(res.data.token);
+      toast.success("You are logged in successfully!");
       navigate("/student", { replace: true });
     } catch (err) {
-      alert(err.response?.data || "Invalid credentials");
+      toast.error("Incorrect username or password");
     } finally {
       setLoading(false);
     }
   };
 
+  // Şifre sıfırlama işlemi burada yapılabilir
+  const handleSendReset = (email) => {
+    // Burada API çağrısı veya toastify ile bildirim ekleyebilirsin
+    // Örnek: toast.success(`Reset link sent to: ${email}`);
+    setShowModal(false);
+  };
+
   return (
     <div className="login-signup-container">
       <div className="login-signup-form">
-        {/* header */}
         <div className="form-header">
           <img src={logo} alt="IYTE Logo" className="form-logo" />
-          <h2 className="form-title">Iztech Online Graduation Management System</h2>
+          <h2 className="form-title">
+            Iztech Online Graduation Management System
+          </h2>
         </div>
 
-        {/* tabs */}
         <div className="tabs">
           <button
             className={`tab ${activeTab === "login" ? "active" : ""}`}
@@ -94,7 +104,6 @@ function LoginSignup() {
           </button>
         </div>
 
-        {/* forms */}
         {activeTab === "login" ? (
           <form className="login-form" onSubmit={handleLogin}>
             <div className="form-group">
@@ -121,12 +130,17 @@ function LoginSignup() {
               {loading ? "…" : "Login"}
             </button>
             <div className="forgot-password">
-              <a href="#">Forgot password?</a>
+              <button
+                type="button"
+                onClick={() => setShowModal(true)}
+                className="forgot-password-link"
+              >
+                Forgot password?
+              </button>
             </div>
           </form>
         ) : (
           <form className="signup-form" onSubmit={handleSignup}>
-            {/* role */}
             <div className="form-group">
               <label htmlFor="role">Role</label>
               <select
@@ -142,7 +156,6 @@ function LoginSignup() {
                 <option value={ROLE.STUDENT_AFFAIRS}>Student Affairs</option>
               </select>
             </div>
-            {/* name */}
             <div className="form-group">
               <label htmlFor="name">Name</label>
               <input
@@ -153,7 +166,6 @@ function LoginSignup() {
                 onChange={handleInputChange}
               />
             </div>
-            {/* surname */}
             <div className="form-group">
               <label htmlFor="surname">Surname</label>
               <input
@@ -164,7 +176,6 @@ function LoginSignup() {
                 onChange={handleInputChange}
               />
             </div>
-            {/* email */}
             <div className="form-group">
               <label htmlFor="email">Email</label>
               <input
@@ -175,7 +186,6 @@ function LoginSignup() {
                 onChange={handleInputChange}
               />
             </div>
-            {/* password */}
             <div className="form-group">
               <label htmlFor="password">Password</label>
               <input
@@ -186,7 +196,6 @@ function LoginSignup() {
                 onChange={handleInputChange}
               />
             </div>
-            {/* confirmPassword */}
             <div className="form-group">
               <label htmlFor="confirmPassword">Confirm Password</label>
               <input
@@ -197,13 +206,15 @@ function LoginSignup() {
                 onChange={handleInputChange}
               />
             </div>
-            {/* submit */}
             <button type="submit" className="submit-button" disabled={loading}>
               {loading ? "…" : "Sign Up"}
             </button>
           </form>
         )}
       </div>
+
+      {/* Modal çağırımı */}
+      {showModal && <ForgotPasswordModal onClose={() => setShowModal(false)} onSend={handleSendReset} />}
     </div>
   );
 }
