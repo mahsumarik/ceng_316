@@ -1,0 +1,22 @@
+# Node / React
+node_modules/
+dist/
+build/
+.cache/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# env / config
+.env*
+!.env.example
+
+# VS Code
+.vscode/
+
+# Mac / Windows / Linux sistem dosyaları
+.DS_Store
+Thumbs.db
+.idea/
+*.swp

@@ -1,0 +1,127 @@
+/* Header Styling */
+.header {
+  width: 100%;
+  height: 100px; /* Header yüksekliğini artırdık */
+  background-color: #8b0000; /* Kırmızı arka plan */
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Hafif gölge efekti */
+  }
+   
+.header-container {
+  width: 90%;
+  max-width: 1100px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-center {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 75%;
+}
+
+.logo-title-container {
+  display: flex;
+  align-items: center;
+  gap: 30px; /* Logo ve başlık arasındaki mesafe artırıldı */
+  width: 100%; /* Genişlik arttırıldı */
+}
+
+.header-logo {
+  width: 110px; /* Logo boyutunu büyüttük */
+  height: 110px; /* Logo boyutunu büyüttük */
+  border-radius: 50%; /* Yuvarlak logo */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* Logo etrafında hafif gölge */
+}
+
+.header-titles {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  flex: 1; /* Header alanı genişletildi */
+}
+
+.header-title {
+  font-size: 2.2rem; /* Başlık fontu büyütüldü */
+  font-weight: bold;
+  margin: 0;
+  letter-spacing: 1px; /* Harfler arasına biraz mesafe ekledik */
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif; /* Yazı tipi eklendi */
+}
+
+.header-subtitle {
+  font-size: 1.5rem; /* Alt başlık boyutu küçültüldü */
+  margin: 10px 75px;
+  font-style: italic;
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif; /* Yazı tipi eklendi */
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  position: relative; /* Konumlandırma özelliği ekliyoruz */
+  left: 120px; 
+}
+
+.nav-button {
+  padding: 5px 10px;
+  background-color: transparent;
+  color: white;
+  border: 2px solid white;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.nav-button:hover {
+  background-color: white;
+  color: #8b0000;
+}
+
+.nav-button.hidden {
+  display: none;
+}
+
+/* Responsive Design - Mobil uyumlu tasarım */
+@media (max-width: 768px) {
+  .header {
+    height: 200px; /* Mobilde daha küçük bir header */
+  }
+
+  .header-container {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .header-center {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .nav-buttons {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .header-logo {
+    width: 70px; /* Logo boyutunu küçültüyoruz */
+    height: 70px; /* Logo boyutunu küçültüyoruz */
+  }
+
+  .header-title {
+    font-size: 2rem; /* Başlık fontunu küçültüyoruz */
+  }
+
+  .header-subtitle {
+    font-size: 1rem; /* Alt başlık fontunu küçültüyoruz */
+  }
+}
