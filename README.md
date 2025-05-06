@@ -15,7 +15,7 @@ The **Graduation Management System (GMS)** is a web-based application designed t
 
 - **Frontend**: React.js, JavaScript, HTML/CSS
 - **Backend**: Spring Boot
-- **Database**: MySQL (or any other DB you used)
+- **Database**: MySQL 
 - **Version Control**: Git & GitHub
 
 ## 📌 Course
