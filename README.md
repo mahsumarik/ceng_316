@@ -1,6 +1,6 @@
 # Graduation Management System (GMS)
 
-This project is developed as a term project for the CENG 316 course (Software Engineering) at [Your University Name].
+This project is developed as a term project for the CENG 316 course Computer Engineering at IYTE.
 
 ## 📚 About the Project
 
@@ -20,7 +20,7 @@ The **Graduation Management System (GMS)** is a web-based application designed t
 
 ## 📌 Course
 
-This project was developed for the **CENG 316 - Software Engineering** course under the supervision of [Instructor Name].
+This project was developed for the **CENG 316 - Software Engineering** course under the supervision of Buket Erşahin.
 
 
 
