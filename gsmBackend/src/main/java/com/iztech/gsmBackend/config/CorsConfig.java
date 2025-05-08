@@ -15,9 +15,9 @@ public class CorsConfig {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
                         .allowedOrigins("http://localhost:3000")   // React dev sunucusu
-                        .allowedMethods("*")
-                        .allowedHeaders("*")
-                        .allowCredentials(true);
+                        .allowedMethods("*") // Tüm HTTP metodlarının (GET, POST, PUT, DELETE vb.) izinli olduğunu belirtir.
+                        .allowedHeaders("*") // Tüm HTTP başlıklarının izinli olduğunu belirtir.
+                        .allowCredentials(true); // Tarayıcıdan gelen isteklerin kimlik doğrulama bilgilerini (örneğin, çerez veya JWT) göndermesine izin verir.
             }
         };
     }

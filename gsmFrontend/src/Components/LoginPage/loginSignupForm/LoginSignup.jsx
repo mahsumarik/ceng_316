@@ -1,22 +1,13 @@
-// ======================== LoginSignup.jsx (form) =====================
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LoginSignup.css";
 import logo from "../../../assets/iyteLogo.png";
 
-import { registerStudent, loginStudent } from "../../../services/authService";
+import { registerUser, loginUser } from "../../../services/authService";
 import { useAuth } from "../../../context/AuthContext";
 
 import { toast } from "react-toastify";
 import ForgotPasswordModal from "./ForgotPasswordModal";
-
-const ROLE = {
-  STUDENT: "STUDENT",
-  ADVISOR: "ADVISOR",
-  DEAN: "DEAN",
-  SECRETARY: "SECRETARY",
-  STUDENT_AFFAIRS: "STUDENT_AFFAIRS",
-};
 
 function LoginSignup() {
   const [activeTab, setActiveTab] = useState("login");
@@ -26,12 +17,9 @@ function LoginSignup() {
   const [showModal, setShowModal] = useState(false);
 
   const [formData, setFormData] = useState({
-    name: "",
-    surname: "",
     email: "",
     password: "",
     confirmPassword: "",
-    role: ROLE.STUDENT,
   });
 
   const handleInputChange = (e) => {
@@ -47,7 +35,8 @@ function LoginSignup() {
     }
     try {
       setLoading(true);
-      await registerStudent(formData);
+      // Sadece email ve password gönderiyoruz
+      await registerUser(formData);
       toast.success("Registration successful — now you can log in");
       setActiveTab("login");
     } catch (err) {
@@ -61,10 +50,23 @@ function LoginSignup() {
     e.preventDefault();
     try {
       setLoading(true);
-      const res = await loginStudent(formData.email, formData.password);
-      login(res.data.token);
+      const res = await loginUser(formData.email, formData.password);
+      login(res.data.token); // JWT token'ı authContext'e kaydediyoruz
       toast.success("You are logged in successfully!");
-      navigate("/student", { replace: true });
+
+      // Backend'den gelen role'ye göre yönlendirme yapıyoruz
+      const { role } = res.data; // Backend'den gelen role bilgisini alıyoruz
+      if (role === "STUDENT") {
+        navigate("/student", { replace: true });
+      } else if (role === "DEAN") {
+        navigate("/dean", { replace: true });
+      } else if (role === "ADVISOR") {
+        navigate("/advisor", { replace: true });
+      } else if (role === "SECRETARY") {
+        navigate("/secretary", { replace: true });
+      } else if (role === "STUDENT_AFFAIRS") {
+        navigate("/studentAffairs", { replace: true });
+      }
     } catch (err) {
       toast.error("Incorrect username or password");
     } finally {
@@ -72,10 +74,7 @@ function LoginSignup() {
     }
   };
 
-  // Şifre sıfırlama işlemi burada yapılabilir
   const handleSendReset = (email) => {
-    // Burada API çağrısı veya toastify ile bildirim ekleyebilirsin
-    // Örnek: toast.success(`Reset link sent to: ${email}`);
     setShowModal(false);
   };
 
@@ -141,41 +140,6 @@ function LoginSignup() {
           </form>
         ) : (
           <form className="signup-form" onSubmit={handleSignup}>
-            <div className="form-group">
-              <label htmlFor="role">Role</label>
-              <select
-                id="role"
-                value={formData.role}
-                onChange={handleInputChange}
-                className="form-group select"
-              >
-                <option value={ROLE.STUDENT}>Student</option>
-                <option value={ROLE.ADVISOR}>Advisor</option>
-                <option value={ROLE.DEAN}>Dean</option>
-                <option value={ROLE.SECRETARY}>Secretary</option>
-                <option value={ROLE.STUDENT_AFFAIRS}>Student Affairs</option>
-              </select>
-            </div>
-            <div className="form-group">
-              <label htmlFor="name">Name</label>
-              <input
-                type="text"
-                id="name"
-                placeholder="Enter your name"
-                value={formData.name}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="surname">Surname</label>
-              <input
-                type="text"
-                id="surname"
-                placeholder="Enter your surname"
-                value={formData.surname}
-                onChange={handleInputChange}
-              />
-            </div>
             <div className="form-group">
               <label htmlFor="email">Email</label>
               <input

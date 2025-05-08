@@ -26,7 +26,6 @@ public abstract class User {
     @Column(nullable = false, unique = true)  // Email null olamaz ve unique olmalı
     private String email;
 
-    @Column(nullable = false)  // Password null olamaz
     private String password;
 
     @Column(nullable = true)  // Phone null olabilir

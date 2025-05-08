@@ -12,6 +12,13 @@ export function AuthProvider({ children }) {
     } catch { return null; }
   });
 
+    // user objesini konsola yazdırmak için useEffect ekliyoruz
+    useEffect(() => {
+      if (user) {
+        console.log('User object:', user);  // Burada user'ı konsola yazdırıyoruz
+      }
+    }, [user]);  // user değiştiğinde yeniden çalışacak
+
   const login = (jwt) => {
     localStorage.setItem("token", jwt);
     const decoded = jwtDecode(jwt);
