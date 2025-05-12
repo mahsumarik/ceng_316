@@ -92,7 +92,6 @@ const AdvisorBody = () => {
                     </>
                 ) : (
                     <div>
-                        {/* Empty notifications page as requested */}
                         <h2>Notifications</h2>
                     </div>
                 )}

@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from "react-router-dom";
 import Header from '../headerForRoles/HeaderRole';
 import iyteLogo from '../../assets/iyteLogo.png';
+import AdvisorBody from './AdvisorBody';
 
 const Advisor = () => {
   const { user, logout } = useAuth();
@@ -21,9 +22,7 @@ const Advisor = () => {
         onLogout={handleLogout}
         logoSrc={iyteLogo}
       />
-      <div className="flex flex-col items-center justify-center h-screen gap-4">
-        {/* İstersen buraya başka içerik ekleyebilirsin */}
-      </div>
+      <AdvisorBody/>
     </>
   );
 };
