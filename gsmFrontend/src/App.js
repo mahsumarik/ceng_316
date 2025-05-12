@@ -10,6 +10,7 @@ import StudentAffairs from './Components/studentAffairPage/StudentAffair';
 import AboutPage from "./Components/LoginPage/aboutPage/AboutPage";
 import ContactPage from "./Components/LoginPage/contactPage/ContactPage";
 import ResetPasswordPage from './Components/LoginPage/loginSignupForm/ResetPasswordPage';
+import TranscriptViewer from './Components/studentPage/TranscriptViewer';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -24,6 +25,7 @@ export default function App() {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/transcript-viewer" element={<TranscriptViewer />} />
         
         <Route
           path="/student"

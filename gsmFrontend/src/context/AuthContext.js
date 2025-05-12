@@ -12,6 +12,8 @@ export function AuthProvider({ children }) {
     } catch { return null; }
   });
 
+    const userId = user ? user.userId : null
+
     // user objesini konsola yazdırmak için useEffect ekliyoruz
     useEffect(() => {
       if (user) {
@@ -33,15 +35,15 @@ export function AuthProvider({ children }) {
   };
 
   // oturum süresi dolduğunda otomatik çıkış (opsiyonel)
-  useEffect(() => {
-    if (!token) return;
-    const { exp } = jwtDecode(token);
-    const timeout = setTimeout(logout, exp * 1000 - Date.now());
-    return () => clearTimeout(timeout);
-  }, [token]);
+  // useEffect(() => {
+  //   if (!token) return;
+  //   const { exp } = jwtDecode(token);
+  //   const timeout = setTimeout(logout, exp * 1000 - Date.now());
+  //   return () => clearTimeout(timeout);
+  // }, [token]);
 
   return (
-    <AuthContext.Provider value={{ token, user, login, logout }}>
+    <AuthContext.Provider value={{ token, user, userId, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -15,6 +15,11 @@ const StudentService = {
     });
     return response.data;
   },
+
+  deleteTranscript: (studentId) => {
+    return api.delete(`/students/${studentId}/transcript`);
+  },
+  
 };
 
 export default StudentService; 

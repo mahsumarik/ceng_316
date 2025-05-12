@@ -47,4 +47,14 @@ public class StudentService implements IStudentService {
         }
         return transcript.get();
     }
+
+    @Override
+    public void deleteTranscript(Long studentId) {
+        Optional<Transcript> transcriptOptional = transcriptRepository.findByStudentId(studentId);
+        if (transcriptOptional.isEmpty()) {
+            throw new RuntimeException("Transcript not found for the student");
+        }
+        Transcript transcript = transcriptOptional.get();
+        transcriptRepository.delete(transcript); // Veritabanından silme işlemi
+    }
 }

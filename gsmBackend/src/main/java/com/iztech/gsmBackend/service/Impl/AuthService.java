@@ -94,7 +94,7 @@ public class AuthService implements IAuthService {
         );
 
         // JWT Token oluşturuluyor
-        String jwt = jwtService.generateToken(userDetails, user.getRole().name(), user.getFirstName());
+        String jwt = jwtService.generateToken(userDetails, user.getRole().name(), user.getFirstName(),user.getId());
         return new AuthResponse(jwt, user.getRole().name());
     }
 

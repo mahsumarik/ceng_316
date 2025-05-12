@@ -10,4 +10,6 @@ public interface IStudentService {
     void uploadTranscript(Long studentId, MultipartFile file) throws IOException;
 
     Transcript getTranscript(Long studentId);
+
+    void deleteTranscript(Long studentId);
 }
