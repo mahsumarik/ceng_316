@@ -1,7 +1,8 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef,useEffect } from 'react';
 import './StudentBody.css';
 import { useAuth } from '../../context/AuthContext'; // AuthContext'ten kullanıcı bilgilerini alıyoruz
 import StudentService from '../../services/StudentService';
+
 
 const DUMMY_APPROVAL = [
   { label: 'Advisor', status: 'Approved', color: 'green' },
@@ -18,30 +19,37 @@ const DUMMY_OVERALL = {
 const DUMMY_TRANSCRIPT = null; // null ise yükleme, obje ise görüntüleme/indirme
 
 const StudentBody = () => {
-  const { user } = useAuth(); // AuthContext'ten kullanıcı bilgilerini alıyoruz
+  const { userId } = useAuth(); // AuthContext'ten kullanıcı bilgilerini alıyoruz
   const [activeMenu, setActiveMenu] = useState('Graduation Details');
-  const [showTranscript, setShowTranscript] = useState(false);
   const [transcript, setTranscript] = useState(DUMMY_TRANSCRIPT); // null veya {url:...}
   const fileInputRef = useRef();
+  
 
-  // Kullanıcı bilgisi kontrolü (id alıyoruz)
-  if (!user) {
-    return <div>Öğrenci bilgileri yüklenemedi. Lütfen tekrar giriş yapın.</div>;
-  }
-
-  const studentId = user.sub; // user'ın içindeki sub veya başka bir alan, öğrenci kimliğini taşıyor olabilir.
+  useEffect(() => {
+    const fetchTranscript = async () => {
+      if (!userId) return;
+      try {
+        const blob = await StudentService.downloadTranscript(userId);
+        setTranscript({ url: window.URL.createObjectURL(blob) });
+      } catch (err) {
+        // Transcript yoksa veya hata varsa transcript null kalır
+        setTranscript(null);
+      }
+    };
+    fetchTranscript();
+  }, [userId]);
 
   // Transcript yükleme
   const handleUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    await StudentService.uploadTranscript(studentId, file); // studentId'yi kullanarak gönderiyoruz
+    await StudentService.uploadTranscript(userId, file); // studentId'yi kullanarak gönderiyoruz
     setTranscript({ url: URL.createObjectURL(file) });
   };
 
   // Transcript indirme
   const handleDownload = async () => {
-    const blob = await StudentService.downloadTranscript(studentId); // studentId'yi kullanarak indirme işlemi yapıyoruz
+    const blob = await StudentService.downloadTranscript(userId); // studentId'yi kullanarak indirme işlemi yapıyoruz
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -53,11 +61,21 @@ const StudentBody = () => {
   // Transcript görüntüleme
   const handleShowTranscript = async () => {
     if (!transcript) {
-      // API'den çek
-      const blob = await StudentService.downloadTranscript(studentId);
-      setTranscript({ url: window.URL.createObjectURL(blob) });
+      const blob = await StudentService.downloadTranscript(userId);
+      const url = window.URL.createObjectURL(blob);
+      setTranscript({ url });
+      window.open(url, "_blank"); // Yeni sekmede aç
+    } else {
+      window.open(transcript.url, "_blank"); // Yeni sekmede aç
     }
-    setShowTranscript(true);
+  };
+
+  // Transcript silme
+  const handleRemoveTranscript = async () => {
+    if (window.confirm("Are you sure you want to remove your transcript?")) {
+      await StudentService.deleteTranscript(userId);
+      setTranscript(null);
+    }
   };
 
   return (
@@ -101,18 +119,12 @@ const StudentBody = () => {
                 </div>
               ) : (
                 <div className="transcript-actions">
-                  <button onClick={handleShowTranscript}>Görüntüle</button>
-                  <button onClick={handleDownload}>İndir</button>
+                    <button onClick={handleShowTranscript}>View</button>
+                    <button onClick={handleDownload}>Download</button>
+                    <button className="remove-btn" onClick={handleRemoveTranscript}>Remove</button>
                 </div>
               )}
-              {showTranscript && transcript && (
-                <div className="transcript-modal">
-                  <div className="modal-content">
-                    <button className="close-btn" onClick={() => setShowTranscript(false)}>Kapat</button>
-                    <iframe src={transcript.url} title="Transcript PDF" width="100%" height="500px" />
-                  </div>
-                </div>
-              )}
+              
             </section>
           </div>
         )}

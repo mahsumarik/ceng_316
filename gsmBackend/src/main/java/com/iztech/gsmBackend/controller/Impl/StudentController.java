@@ -29,4 +29,11 @@ public class StudentController implements IStudentController {
                 .header("Content-Type", "application/pdf")  // Dosyanın türünü belirtiyoruz
                 .body(studentService.getTranscript(studentId).getContent());
     }
+
+    @Override
+    @DeleteMapping("/{studentId}/transcript")
+    public ResponseEntity<String> deleteTranscript(@PathVariable Long studentId) {
+        studentService.deleteTranscript(studentId); // Transkripti silme işlemi
+        return ResponseEntity.ok("Transcript deleted successfully.");
+    }
 }

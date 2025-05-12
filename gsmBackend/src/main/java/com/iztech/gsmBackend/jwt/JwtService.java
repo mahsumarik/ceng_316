@@ -16,13 +16,15 @@ import java.util.function.Function;
 public class JwtService {
     public static final String SECRET_KEY = "zV0UFbOn4yi4x9DQzcwLAibjG0jl+UZa65Isv/B2LSw=";
 
-    public String generateToken(UserDetails userDetails, String role,String firstName) {
+    // Token'ı generate ederken, role'ye göre userId'yi ekliyoruz
+    public String generateToken(UserDetails userDetails, String role, String firstName, Long userId) {
         return Jwts.builder()
-                .setSubject(userDetails.getUsername())
-                .claim("role", role)
+                .setSubject(userDetails.getUsername())  // Kullanıcı email
+                .claim("role", role)  // Kullanıcı rolü
                 .claim("firstName", firstName)
+                .claim("userId", userId)  // User ID'yi buraya ekliyoruz
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 2))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 2))  // 2 saatlik geçerlilik
                 .signWith(getKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -44,6 +46,11 @@ public class JwtService {
 
     public String getRoleByToken(String token) {
         return exportToken(token, claims -> claims.get("role", String.class));
+    }
+
+    // Token'dan userId'yi alıyoruz
+    public Long getUserIdByToken(String token) {
+        return exportToken(token, claims -> claims.get("userId", Long.class));
     }
 
     public boolean isTokenExpired(String token) {
