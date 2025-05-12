@@ -1,0 +1,136 @@
+INSERT  IGNORE  INTO student_affairs ( id,first_name, last_name, email, phone, role)
+VALUES ( 1,'Ahmet', 'Yildirim', 'ahmetyildirim@iyte.edu.tr', '+905301234567', 'STUDENT_AFFAIRS');
+
+INSERT IGNORE INTO deans (id, email, first_name, last_name, phone, role, faculty)
+VALUES
+    (2, 'mehmetkara@iyte.edu.tr', 'Mehmet', 'Kara', '+905321234567', 'DEAN', 'Science'),
+    (3, 'ayseozturk@iyte.edu.tr', 'Ayse', 'Ozturk', '+905331234567', 'DEAN', 'Engineering'),
+    (4, 'alidemir@iyte.edu.tr', 'Ali', 'Demir', '+905341234567', 'DEAN', 'Architecture');
+
+
+INSERT IGNORE  INTO secretaries (id, first_name, last_name, email, phone, role, department, faculty)
+VALUES
+    (5, 'Mehmet', 'Polat', 'mehmetpolat@iyte.edu.tr', '+905578197020', 'SECRETARY', 'ComputerEngineering', 'Engineering'),
+    (6, 'Ayse', 'Yilmaz', 'ayseyilmaz@iyte.edu.tr', '+905168484497', 'SECRETARY', 'Physics', 'Science'),
+    (7, 'Emre', 'Celik', 'emrecelik@iyte.edu.tr', '+905776181051', 'SECRETARY', 'Architecture', 'Architecture'),
+    (8, 'Emre', 'Sahin', 'emresahin@iyte.edu.tr', '+905394195730', 'SECRETARY', 'MechanicalEngineering', 'Engineering');
+
+INSERT IGNORE INTO advisors (id, email, first_name, last_name, phone, role, department, faculty)
+VALUES
+    (9, 'emreguler@iyte.edu.tr', 'Emre', 'Guler', '+905752768682', 'ADVISOR', 'ComputerEngineering', 'Engineering'),
+    (10, 'elifguler@iyte.edu.tr', 'Elif', 'Guler', '+905849958434', 'ADVISOR', 'ComputerEngineering', 'Engineering'),
+    (11, 'ahmetyilmaz@iyte.edu.tr', 'Ahmet', 'Yilmaz', '+905813241313', 'ADVISOR', 'ComputerEngineering', 'Engineering'),
+    (12, 'mahsumcelik@iyte.edu.tr', 'Mahsum', 'Celik', '+905692836454', 'ADVISOR', 'Physics', 'Science'),
+    (13, 'aysecelik@iyte.edu.tr', 'Ayse', 'Celik', '+905483019242', 'ADVISOR', 'Physics', 'Science'),
+    (14, 'alipolat@iyte.edu.tr', 'Ali', 'Polat', '+905441965067', 'ADVISOR', 'Physics', 'Science'),
+    (15, 'ayseaksoy@iyte.edu.tr', 'Ayse', 'Aksoy', '+905342517717', 'ADVISOR', 'Architecture', 'Architecture'),
+    (16, 'fatmacelik@iyte.edu.tr', 'Fatma', 'Celik', '+905721018658', 'ADVISOR', 'Architecture', 'Architecture'),
+    (17, 'zeynepaksoy@iyte.edu.tr', 'Zeynep', 'Aksoy', '+905966282888', 'ADVISOR', 'Architecture', 'Architecture'),
+    (18, 'muratyilmaz@iyte.edu.tr', 'Murat', 'Yilmaz', '+905174228896', 'ADVISOR', 'MechanicalEngineering', 'Engineering'),
+    (19, 'fatmasahin@iyte.edu.tr', 'Fatma', 'Sahin', '+905228668175', 'ADVISOR', 'MechanicalEngineering', 'Engineering'),
+    (20, 'muratkaya@iyte.edu.tr', 'Murat', 'Kaya', '+905141582577', 'ADVISOR', 'MechanicalEngineering', 'Engineering');
+
+INSERT IGNORE INTO students (id, first_name, last_name, email, phone, role, student_number, department, faculty, enrollment_date, graduation_status, gpa, advisor_id)
+VALUES
+    (21, 'Mahsum', 'Arık', 'mahsumarik@std.iyte.edu.tr', '905434198634', 'STUDENT', '290201080', 'ComputerEngineering', 'Engineering', '03.10.2021', False, 3.19, 9),
+    (22, 'Gokhan', 'Kurtulus', 'gokhankurtulus@std.iyte.edu.tr', '905906196796', 'STUDENT', '270248893', 'ComputerEngineering', 'Engineering', '19.08.2018', False, 3.46, 9),
+    (23, 'Alperen', 'Balci', 'alperenbalci@std.iyte.edu.tr', '905441755098', 'STUDENT', '280912418', 'ComputerEngineering', 'Engineering', '26.07.2017', False, 2.03, 9),
+    (24, 'Fatma', 'Ozturk', 'fatmaozturk@std.iyte.edu.tr', '905973325959', 'STUDENT', '280695468', 'ComputerEngineering', 'Engineering', '07.12.2020', False, 3.88, 9),
+    (25, 'Irem', 'Yilmaz', 'i̇remyilmaz@std.iyte.edu.tr', '905163716437', 'STUDENT', '290409685', 'ComputerEngineering', 'Engineering', '17.09.2018', False, 0.58, 9),
+    (26, 'Omer', 'Koc', 'omerkoc@std.iyte.edu.tr', '905939353082', 'STUDENT', '260821324', 'ComputerEngineering', 'Engineering', '11.09.2021', False, 0.05, 9),
+    (27, 'Deniz', 'Bagci', 'denizbagci@std.iyte.edu.tr', '905481698049', 'STUDENT', '260124786', 'ComputerEngineering', 'Engineering', '15.04.2020', False, 2.28, 9),
+    (28, 'Emine', 'Kalkan', 'eminekalkan@std.iyte.edu.tr', '905931716772', 'STUDENT', '280312323', 'ComputerEngineering', 'Engineering', '07.10.2017', False, 1.14, 9),
+    (29, 'Gulsum', 'Simsek', 'gulsumsimsek@std.iyte.edu.tr', '905111788663', 'STUDENT', '280445717', 'ComputerEngineering', 'Engineering', '25.04.2017', False, 1.85, 10),
+    (30, 'Aydin', 'Sahin', 'aydinsahin@std.iyte.edu.tr', '905744915962', 'STUDENT', '280514635', 'ComputerEngineering', 'Engineering', '13.12.2017', False, 1.39, 10),
+    (31, 'Emine', 'Balkan', 'eminebalkan@std.iyte.edu.tr', '905704769235', 'STUDENT', '280628619', 'ComputerEngineering', 'Engineering', '03.10.2016', False, 3.64, 10),
+    (32, 'Zeynep', 'Aydin', 'zeynepaydin@std.iyte.edu.tr', '905944115219', 'STUDENT', '270887297', 'ComputerEngineering', 'Engineering', '30.12.2016', False, 0.94, 10),
+    (33, 'Fikret', 'Tas', 'fikrettas@std.iyte.edu.tr', '905487071726', 'STUDENT', '290277227', 'ComputerEngineering', 'Engineering', '24.10.2020', False, 0.53, 10),
+    (34, 'Bora', 'Yuksel', 'borayuksel@std.iyte.edu.tr', '905526806521', 'STUDENT', '280717593', 'ComputerEngineering', 'Engineering', '28.04.2021', False, 2.53, 10),
+    (35, 'Hasan', 'Polat', 'hasanpolat@std.iyte.edu.tr', '905384877819', 'STUDENT', '270550769', 'ComputerEngineering', 'Engineering', '08.05.2020', False, 1.91, 10),
+    (36, 'Ayse', 'Bicakci', 'aysebicakci@std.iyte.edu.tr', '905691205525', 'STUDENT', '290829318', 'ComputerEngineering', 'Engineering', '11.09.2017', False, 1.68, 10),
+    (37, 'Mehmet', 'Ozturk', 'mehmetozturk@std.iyte.edu.tr', '905359631186', 'STUDENT', '290783290', 'ComputerEngineering', 'Engineering', '18.02.2019', False, 3.8, 11),
+    (38, 'Sena', 'Yilmaz', 'senayilmaz@std.iyte.edu.tr', '905565487061', 'STUDENT', '280133502', 'ComputerEngineering', 'Engineering', '26.12.2020', False, 3.6, 11),
+    (39, 'Gizem', 'Ozturk', 'gizemozturk@std.iyte.edu.tr', '905569464465', 'STUDENT', '260672487', 'ComputerEngineering', 'Engineering', '09.09.2021', False, 1.5, 11),
+    (40, 'Cemre', 'Kus', 'cemrekus@std.iyte.edu.tr', '905781569219', 'STUDENT', '290399993', 'ComputerEngineering', 'Engineering', '15.02.2018', False, 0.37, 11),
+    (41, 'Cemre', 'Kurtulus', 'cemrekurtulus@std.iyte.edu.tr', '905938965187', 'STUDENT', '260747793', 'ComputerEngineering', 'Engineering', '25.02.2021', False, 0.46, 11),
+    (42, 'Hakan', 'Eryilmaz', 'hakaneryilmaz@std.iyte.edu.tr', '905585712564', 'STUDENT', '270595410', 'ComputerEngineering', 'Engineering', '12.12.2019', False, 3.89, 11),
+    (43, 'Aylin', 'Yuksel', 'aylinyuksel@std.iyte.edu.tr', '905231149221', 'STUDENT', '290857696', 'ComputerEngineering', 'Engineering', '15.11.2019', False, 0.59, 11),
+    (44, 'Gulden', 'Guzel', 'guldenguzel@std.iyte.edu.tr', '905831877941', 'STUDENT', '270658920', 'ComputerEngineering', 'Engineering', '29.08.2019', False, 0.26, 11),
+    (45, 'Kubra', 'Balci', 'kubrabalci@std.iyte.edu.tr', '905736982869', 'STUDENT', '290756989', 'Physics', 'Science', '07.04.2018', False, 0.68, 12),
+    (46, 'Eda', 'Polat', 'edapolat@std.iyte.edu.tr', '905701008786', 'STUDENT', '270361097', 'Physics', 'Science', '18.09.2017', False, 3.44, 12),
+    (47, 'Ozan', 'Aksoy', 'ozanaksoy@std.iyte.edu.tr', '905531848480', 'STUDENT', '270481089', 'Physics', 'Science', '05.07.2020', False, 0.42, 12),
+    (48, 'Irem', 'Pektas', 'i̇rempektas@std.iyte.edu.tr', '905142114965', 'STUDENT', '290330990', 'Physics', 'Science', '05.11.2018', False, 1.76, 12),
+    (49, 'Elif', 'Keskin', 'elifkeskin@std.iyte.edu.tr', '905228625989', 'STUDENT', '280623806', 'Physics', 'Science', '05.05.2021', False, 1.07, 12),
+    (50, 'Hikmet', 'Ucar', 'hikmetucar@std.iyte.edu.tr', '905326954450', 'STUDENT', '270260640', 'Physics', 'Science', '04.09.2017', False, 3.7, 12),
+    (51, 'Ugur', 'Suleyman', 'ugursuleyman@std.iyte.edu.tr', '905319648186', 'STUDENT', '290778418', 'Physics', 'Science', '21.04.2021', False, 0.64, 12),
+    (52, 'Gokhan', 'Zengin', 'gokhanzengin@std.iyte.edu.tr', '905208686465', 'STUDENT', '290688702', 'Physics', 'Science', '29.08.2018', False, 0.59, 12),
+    (53, 'Yusuf', 'Kaya', 'yusufkaya@std.iyte.edu.tr', '905456089259', 'STUDENT', '290899670', 'Physics', 'Science', '04.05.2020', False, 3.08, 13),
+    (54, 'Berkay', 'Yavuz', 'berkayyavuz@std.iyte.edu.tr', '905449616642', 'STUDENT', '270330355', 'Physics', 'Science', '17.01.2018', False, 1.95, 13),
+    (55, 'Ali', 'Polat', 'alipolat@std.iyte.edu.tr', '905822768588', 'STUDENT', '270396730', 'Physics', 'Science', '06.07.2021', False, 2.22, 13),
+    (56, 'Gokhan', 'Celik', 'gokhancelik@std.iyte.edu.tr', '905228124512', 'STUDENT', '270177958', 'Physics', 'Science', '17.11.2019', False, 0.8, 13),
+    (57, 'Aydin', 'Guler', 'aydinguler@std.iyte.edu.tr', '905214037981', 'STUDENT', '280313734', 'Physics', 'Science', '20.06.2017', False, 2.62, 13),
+    (58, 'Sinem', 'Guler', 'sinemguler@std.iyte.edu.tr', '905373075951', 'STUDENT', '260800550', 'Physics', 'Science', '16.12.2017', False, 1.61, 13),
+    (59, 'Tugba', 'Can', 'tugbacan@std.iyte.edu.tr', '905289016929', 'STUDENT', '290476695', 'Physics', 'Science', '26.04.2021', False, 0.79, 13),
+    (60, 'Baran', 'Arslan', 'baranarslan@std.iyte.edu.tr', '905512462330', 'STUDENT', '290709525', 'Physics', 'Science', '01.03.2019', False, 2.99, 13),
+    (61, 'Burak', 'Dogan', 'burakdogan@std.iyte.edu.tr', '905407262169', 'STUDENT', '260434400', 'Physics', 'Science', '25.12.2019', False, 2.69, 14);
+
+INSERT IGNORE INTO students (id, first_name, last_name, email, phone, role, student_number, department, faculty, enrollment_date, graduation_status, gpa, advisor_id)
+VALUES
+    (62, 'Aysegul', 'Kurt', 'aysegulkurt@std.iyte.edu.tr', '905914928375', 'STUDENT', '280663450', 'Physics', 'Science', '06.05.2021', False, 1.88, 14),
+    (63, 'Murat', 'Demir', 'muratdemir@std.iyte.edu.tr', '905999353993', 'STUDENT', '260429326', 'Physics', 'Science', '22.05.2021', False, 0.72, 14),
+    (64, 'Fatma', 'Ozturk', 'fatmaozturk@std.iyte.edu.tr', '905223025889', 'STUDENT', '270706723', 'Physics', 'Science', '02.04.2019', False, 3.56, 14),
+    (65, 'Selin', 'Bozkurt', 'selinbozkurt@std.iyte.edu.tr', '905251214895', 'STUDENT', '260219221', 'Physics', 'Science', '06.03.2018', False, 1.28, 14),
+    (66, 'Sena', 'Sezer', 'senasezer@std.iyte.edu.tr', '905483599471', 'STUDENT', '290938637', 'Physics', 'Science', '11.05.2021', False, 3.47, 14),
+    (67, 'Kemal', 'Beyhan', 'kemalbeyhan@std.iyte.edu.tr', '905962698063', 'STUDENT', '260531272', 'Physics', 'Science', '23.10.2017', False, 1.39, 14),
+    (68, 'Cemre', 'Buyuk', 'cemrebuyuk@std.iyte.edu.tr', '905688877547', 'STUDENT', '280321567', 'Physics', 'Science', '24.04.2017', False, 3.44, 14),
+    (69, 'Murat', 'Celik', 'muratcelik@std.iyte.edu.tr', '905621505497', 'STUDENT', '280907058', 'Architecture', 'Architecture', '26.05.2021', False, 1.0, 15),
+    (70, 'Melek', 'Ozturk', 'melekozturk@std.iyte.edu.tr', '905904728846', 'STUDENT', '260906034', 'Architecture', 'Architecture', '17.07.2019', False, 0.49, 15),
+    (71, 'Koray', 'Sari', 'koraysari@std.iyte.edu.tr', '905477198146', 'STUDENT', '280991660', 'Architecture', 'Architecture', '21.03.2017', False, 0.22, 15),
+    (72, 'Beyza', 'Kurtulus', 'beyzakurtulus@std.iyte.edu.tr', '905146741535', 'STUDENT', '280504034', 'Architecture', 'Architecture', '08.06.2019', False, 1.7, 15),
+    (73, 'Mehmet', 'Sahin', 'mehmetsahin@std.iyte.edu.tr', '905604101260', 'STUDENT', '260379422', 'Architecture', 'Architecture', '10.05.2017', False, 1.42, 15),
+    (74, 'Seda', 'Celik', 'sedacelik@std.iyte.edu.tr', '905584157050', 'STUDENT', '280422185', 'Architecture', 'Architecture', '06.03.2018', False, 1.54, 15),
+    (75, 'Serdar', 'Bozkurt', 'serdarbozkurt@std.iyte.edu.tr', '905515129368', 'STUDENT', '260166478', 'Architecture', 'Architecture', '11.12.2016', False, 3.64, 15),
+    (76, 'Tugba', 'Ari', 'tugbaari@std.iyte.edu.tr', '905168894137', 'STUDENT', '270862116', 'Architecture', 'Architecture', '09.01.2019', False, 1.71, 15),
+    (77, 'Emre', 'Ece', 'emreece@std.iyte.edu.tr', '905381438055', 'STUDENT', '270242370', 'Architecture', 'Architecture', '28.05.2021', False, 0.8, 16),
+    (78, 'Ismail', 'Arslan', 'i̇smailarslan@std.iyte.edu.tr', '905792781031', 'STUDENT', '260840916', 'Architecture', 'Architecture', '22.10.2016', False, 0.7, 16),
+    (79, 'Simge', 'Yuksek', 'simgeyuksek@std.iyte.edu.tr', '905266232060', 'STUDENT', '260421602', 'Architecture', 'Architecture', '12.05.2017', False, 3.98, 16),
+    (80, 'Gokhan', 'Guler', 'gokhanguler@std.iyte.edu.tr', '905164266360', 'STUDENT', '260477953', 'Architecture', 'Architecture', '30.05.2019', False, 2.71, 16),
+    (81, 'Mert', 'Balci', 'mertbalci@std.iyte.edu.tr', '905942891774', 'STUDENT', '260475760', 'Architecture', 'Architecture', '26.10.2020', False, 3.26, 16),
+    (82, 'Arda', 'Kucuk', 'ardakucuk@std.iyte.edu.tr', '905187833625', 'STUDENT', '260355195', 'Architecture', 'Architecture', '22.03.2017', False, 0.93, 16),
+    (83, 'Serap', 'Cetin', 'serapcetin@std.iyte.edu.tr', '905459988464', 'STUDENT', '260415546', 'Architecture', 'Architecture', '30.12.2020', False, 0.58, 16),
+    (84, 'Sibel', 'Suleyman', 'sibelsuleyman@std.iyte.edu.tr', '905395726161', 'STUDENT', '290749199', 'Architecture', 'Architecture', '16.06.2018', False, 0.45, 16),
+    (85, 'Efe', 'Sezer', 'efesezer@std.iyte.edu.tr', '905112789746', 'STUDENT', '270897899', 'Architecture', 'Architecture', '05.04.2020', False, 2.2, 17),
+    (86, 'Emre', 'Ari', 'emreari@std.iyte.edu.tr', '905671188035', 'STUDENT', '280104695', 'Architecture', 'Architecture', '18.01.2018', False, 3.82, 17),
+    (87, 'Elif', 'Cetin', 'elifcetin@std.iyte.edu.tr', '905473643152', 'STUDENT', '290917426', 'Architecture', 'Architecture', '13.05.2019', False, 0.75, 17),
+    (88, 'Elif', 'Guzel', 'elifguzel@std.iyte.edu.tr', '905553649329', 'STUDENT', '290133787', 'Architecture', 'Architecture', '16.01.2021', False, 3.18, 17),
+    (89, 'Melek', 'Aksoy', 'melekaksoy@std.iyte.edu.tr', '905862383176', 'STUDENT', '270123565', 'Architecture', 'Architecture', '13.10.2018', False, 3.54, 17),
+    (90, 'Yeliz', 'Zengin', 'yelizzengin@std.iyte.edu.tr', '905135308717', 'STUDENT', '270712098', 'Architecture', 'Architecture', '02.10.2019', False, 1.22, 17),
+    (91, 'Baran', 'Bagci', 'baranbagci@std.iyte.edu.tr', '905146343065', 'STUDENT', '270336533', 'Architecture', 'Architecture', '25.04.2017', False, 1.67, 17),
+    (92, 'Veli', 'Celik', 'velicelik@std.iyte.edu.tr', '905903366852', 'STUDENT', '270886782', 'Architecture', 'Architecture', '21.04.2021', False, 0.78, 17),
+    (93, 'Berk', 'Aydin', 'berkaydin@std.iyte.edu.tr', '905901923611', 'STUDENT', '260312322', 'MechanicalEngineering', 'Engineering', '20.11.2019', False, 1.51, 18),
+    (94, 'Nesrin', 'Aydin', 'nesrinaydin@std.iyte.edu.tr', '905357892018', 'STUDENT', '270921386', 'MechanicalEngineering', 'Engineering', '14.08.2017', False, 1.98, 18),
+    (95, 'Meryem', 'Ozturk', 'meryemozturk@std.iyte.edu.tr', '905127644349', 'STUDENT', '290561847', 'MechanicalEngineering', 'Engineering', '17.11.2017', False, 0.65, 18),
+    (96, 'Serdar', 'Aydin', 'serdaraydin@std.iyte.edu.tr', '905939534774', 'STUDENT', '270290935', 'MechanicalEngineering', 'Engineering', '11.10.2016', False, 1.5, 18),
+    (97, 'Murat', 'Sahin', 'muratsahin@std.iyte.edu.tr', '905562682986', 'STUDENT', '280686654', 'MechanicalEngineering', 'Engineering', '06.01.2017', False, 0.99, 18),
+    (98, 'Berkay', 'Kaya', 'berkaykaya@std.iyte.edu.tr', '905713962642', 'STUDENT', '260808306', 'MechanicalEngineering', 'Engineering', '05.01.2018', False, 1.78, 18),
+    (99, 'Emre', 'Usta', 'emreusta@std.iyte.edu.tr', '905262264148', 'STUDENT', '260754005', 'MechanicalEngineering', 'Engineering', '01.10.2017', False, 0.01, 18),
+    (100, 'Murat', 'Yilmaz', 'muratyilmaz@std.iyte.edu.tr', '905116887492', 'STUDENT', '270756553', 'MechanicalEngineering', 'Engineering', '15.11.2020', False, 1.52, 18),
+    (101, 'Sinan', 'Yavuz', 'sinanyavuz@std.iyte.edu.tr', '905662032794', 'STUDENT', '290599397', 'MechanicalEngineering', 'Engineering', '05.10.2017', False, 1.31, 19),
+    (102, 'Ahmet', 'Arslan', 'ahmetarslan@std.iyte.edu.tr', '905291061134', 'STUDENT', '260854232', 'MechanicalEngineering', 'Engineering', '07.12.2020', False, 2.46, 19),
+    (103, 'Simge', 'Guler', 'simgeguler@std.iyte.edu.tr', '905217667629', 'STUDENT', '270959201', 'MechanicalEngineering', 'Engineering', '06.11.2016', False, 1.46, 19),
+    (104, 'Serap', 'Kaya', 'serapkaya@std.iyte.edu.tr', '905713716559', 'STUDENT', '260617154', 'MechanicalEngineering', 'Engineering', '15.09.2016', False, 0.5, 19),
+    (105, 'Kemal', 'Kalkan', 'kemalkalkan@std.iyte.edu.tr', '905515038691', 'STUDENT', '290947891', 'MechanicalEngineering', 'Engineering', '14.04.2018', False, 1.04, 19),
+    (106, 'Beyza', 'Sahin', 'beyzasahin@std.iyte.edu.tr', '905623146796', 'STUDENT', '270859818', 'MechanicalEngineering', 'Engineering', '04.04.2020', False, 0.64, 19),
+    (107, 'Fikret', 'Beker', 'fikretbeker@std.iyte.edu.tr', '905604079812', 'STUDENT', '270587927', 'MechanicalEngineering', 'Engineering', '24.06.2017', False, 1.59, 19),
+    (108, 'Kubra', 'Eryilmaz', 'kubraeryilmaz@std.iyte.edu.tr', '905988869592', 'STUDENT', '260934183', 'MechanicalEngineering', 'Engineering', '24.06.2020', False, 1.06, 19),
+    (109, 'Arda', 'Kaya', 'ardakaya@std.iyte.edu.tr', '905176379355', 'STUDENT', '260432774', 'MechanicalEngineering', 'Engineering', '12.02.2019', False, 1.9, 20),
+    (110, 'Busra', 'Sahin', 'busrasahin@std.iyte.edu.tr', '905236323041', 'STUDENT', '260279701', 'MechanicalEngineering', 'Engineering', '20.06.2019', False, 1.23, 20),
+    (111, 'Ibrahim', 'Ucar', 'i̇brahimucar@std.iyte.edu.tr', '905826362444', 'STUDENT', '270800609', 'MechanicalEngineering', 'Engineering', '18.02.2020', False, 0.39, 20),
+    (112, 'Koray', 'Balci', 'koraybalci@std.iyte.edu.tr', '905165314490', 'STUDENT', '270505788', 'MechanicalEngineering', 'Engineering', '09.03.2021', False, 0.12, 20),
+    (113, 'Seda', 'Arslan', 'sedaarslan@std.iyte.edu.tr', '905461284023', 'STUDENT', '280994286', 'MechanicalEngineering', 'Engineering', '01.04.2019', False, 3.82, 20),
+    (114, 'Hikmet', 'Beyhan', 'hikmetbeyhan@std.iyte.edu.tr', '905547168961', 'STUDENT', '290479543', 'MechanicalEngineering', 'Engineering', '23.09.2016', False, 1.64, 20),
+    (115, 'Eda', 'Balci', 'edabalci@std.iyte.edu.tr', '905266882331', 'STUDENT', '270275409', 'MechanicalEngineering', 'Engineering', '25.05.2021', False, 0.31, 20),
+    (116, 'Sinan', 'Aslan', 'sinanaslan@std.iyte.edu.tr', '905277694125', 'STUDENT', '290780522', 'MechanicalEngineering', 'Engineering', '03.08.2017', False, 1.57, 20);
+
+
+

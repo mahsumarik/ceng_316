@@ -1,0 +1,32 @@
+package com.iztech.gsmBackend.controller.Impl;
+
+import com.iztech.gsmBackend.controller.IStudentController;
+import com.iztech.gsmBackend.service.IStudentService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+@RestController
+@RequestMapping("/api/students")
+public class StudentController implements IStudentController {
+
+    @Autowired
+    private IStudentService studentService;
+
+    @Override
+    @PostMapping("/{studentId}/upload-transcript")
+    public ResponseEntity<String> uploadTranscript(@PathVariable Long studentId,
+                                                   @RequestParam("file") MultipartFile file) throws Exception {
+        studentService.uploadTranscript(studentId, file);
+        return ResponseEntity.ok("Transcript uploaded successfully.");
+    }
+
+    @Override
+    @GetMapping("/{studentId}/transcript")
+    public ResponseEntity<byte[]> getTranscript(@PathVariable Long studentId) {
+        return ResponseEntity.ok()
+                .header("Content-Type", "application/pdf")  // Dosyanın türünü belirtiyoruz
+                .body(studentService.getTranscript(studentId).getContent());
+    }
+}

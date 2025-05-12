@@ -20,6 +20,7 @@ public class Student extends User {
     private LocalDate enrollmentDate;
     private Boolean graduationStatus;
     private Double gpa;
+    private int ectsEarned;
     
     @ManyToOne
     @JoinColumn(name = "advisor_id")
