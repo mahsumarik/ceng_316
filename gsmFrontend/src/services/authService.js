@@ -1,18 +1,15 @@
 import api from "./api";
 
 // Kullanıcı kaydını yapma
-export const registerStudent = (payload) =>
+export const registerUser= (payload) =>
   api.post("/auth/register", {
-    firstName: payload.name,      // backend property adları
-    lastName: payload.surname,
     email: payload.email,
     password: payload.password,
     confirmPassword: payload.confirmPassword,
-    role: payload.role            // şimdilik "STUDENT"; backend yine de override ediyor
   });
 
 // Kullanıcı girişi yapma
-export const loginStudent = (email, password) =>
+export const loginUser = (email, password) =>
   api.post("/auth/login", { email, password });  // AuthResponse {token, role}
 
 // Şifre sıfırlama talebi gönderme
