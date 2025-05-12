@@ -14,7 +14,6 @@ import lombok.experimental.SuperBuilder;
 public abstract class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)  // Name (firstName, lastName) null olamaz

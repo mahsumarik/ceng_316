@@ -1,0 +1,159 @@
+.student-body-root {
+  display: flex;
+  height: 100vh;
+  background: #f7f8fa;
+}
+
+.student-sidebar {
+  width: 240px;
+  background: #e9ecef;
+  display: flex;
+  flex-direction: column;
+  padding: 32px 0 0 0;
+  gap: 8px;
+  min-height: 100vh;
+}
+.student-sidebar button {
+  background: none;
+  border: none;
+  padding: 16px 32px;
+  text-align: left;
+  font-size: 1.1rem;
+  color: #333;
+  cursor: pointer;
+  border-radius: 8px 0 0 8px;
+  transition: background 0.2s, color 0.2s;
+}
+.student-sidebar button.active,
+.student-sidebar button:hover {
+  background: #29608a;
+  color: #fff;
+}
+
+.student-main {
+  flex: 1;
+  padding: 40px 48px;
+  overflow-y: auto;
+}
+.graduation-details {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  padding: 32px 32px 24px 32px;
+}
+.details-flex {
+  display: flex;
+  gap: 32px;
+  margin-bottom: 32px;
+}
+.approval-status, .overall-status {
+  flex: 1;
+  background: #f5f7fa;
+  border-radius: 12px;
+  padding: 24px 20px;
+}
+.approval-list {
+  margin-top: 12px;
+}
+.approval-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 1.08rem;
+}
+.approval-label {
+  font-weight: 600;
+}
+.approval-status-text.green {
+  color: #2ecc40;
+  font-weight: 600;
+}
+.approval-status-text.orange {
+  color: #f39c12;
+  font-weight: 600;
+}
+.overall-list > div {
+  margin-bottom: 10px;
+  font-size: 1.08rem;
+}
+.certificate {
+  color: #2ecc40;
+  margin-left: 10px;
+  font-weight: 500;
+}
+.transcript-section {
+  margin-top: 24px;
+  background: #f5f7fa;
+  border-radius: 12px;
+  padding: 24px 20px;
+}
+.transcript-upload button {
+  background: #29608a;
+  color: #fff;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.transcript-upload button:hover {
+  background: #1d4661;
+}
+.transcript-actions button {
+  background: #29608a;
+  color: #fff;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-size: 1rem;
+  margin-right: 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.transcript-actions button:hover {
+  background: #1d4661;
+}
+.transcript-modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.modal-content {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  min-width: 400px;
+  max-width: 700px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.18);
+  position: relative;
+}
+.close-btn {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: #e74c3c;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 12px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.close-btn:hover {
+  background: #c0392b;
+}
+.notifications-placeholder {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  padding: 48px;
+  text-align: center;
+  color: #888;
+  font-size: 1.2rem;
+}

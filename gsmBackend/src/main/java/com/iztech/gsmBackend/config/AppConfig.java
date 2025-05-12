@@ -30,20 +30,6 @@ public class AppConfig {
     @Autowired
     private IDeanRepository deanRepository;
 
-
-    /*
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return email -> studentRepository.findByEmail(email)
-                .map(user -> org.springframework.security.core.userdetails.User.builder()
-                        .username(user.getEmail())
-                        .password(user.getPassword())
-                        .authorities("ROLE_" + user.getRole().name())
-                        .build())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-    }
-    */
-
     @Bean
     public UserDetailsService userDetailsService() {
         return email -> {

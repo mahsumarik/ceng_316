@@ -14,6 +14,4 @@ public class Transcript extends Document {
     @JoinColumn(name = "student_id")
     private Student student; // Transcript ile ilişkilendirilen öğrenci
 
-    private double gpa; // Öğrencinin GPA'sı
-    private int ectsEarned; // Öğrencinin kazandığı ECTS
 }

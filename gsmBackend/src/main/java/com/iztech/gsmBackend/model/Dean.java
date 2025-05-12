@@ -15,5 +15,6 @@ import java.util.List;
 public class Dean extends User {
     @OneToMany(mappedBy = "dean")
     private List<StudentList> studentLists;
-    private String deansOfficeName;
+
+    private String faculty;
 }
