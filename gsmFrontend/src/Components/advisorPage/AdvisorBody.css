@@ -151,3 +151,73 @@
 .back-btn:hover {
     background-color: #e9ecef;
 }
+
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-top: 24px;
+    padding: 16px;
+}
+
+.pagination-controls button {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    color: #333;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pagination-controls button:hover:not(:disabled) {
+    background-color: #e9ecef;
+    border-color: #ced4da;
+}
+
+.pagination-controls button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination-controls .page-info {
+    background-color: #4285f4;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.pagination-controls .page-numbers {
+    display: flex;
+    gap: 8px;
+}
+
+.pagination-controls .page-number {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    color: #333;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.pagination-controls .page-number.active {
+    background-color: #4285f4;
+    color: white;
+    border-color: #4285f4;
+}
+
+.pagination-controls .page-number:hover:not(.active) {
+    background-color: #e9ecef;
+    border-color: #ced4da;
+}
