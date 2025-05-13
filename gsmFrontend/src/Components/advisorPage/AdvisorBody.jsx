@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import './AdvisorBody.css';
+import ViewDetails from './ViewDetails';
 
 const AdvisorBody = () => {
     const [activeTab, setActiveTab] = useState('Student List');
     const [searchTerm, setSearchTerm] = useState('');
+    const [selectedStudent, setSelectedStudent] = useState(null);
+    const [showViewDetails, setShowViewDetails] = useState(false);
 
     // Mock data for demonstration
     const students = [
@@ -11,25 +14,65 @@ const AdvisorBody = () => {
             id: '1001',
             name: 'Alice Johnson',
             status: 'Approved',
-            gpa: '3.45'
+            gpa: '3.45',
+            ectsEarned: '240'
         },
         {
             id: '1002',
             name: 'Bob Smith',
             status: 'Approved',
-            gpa: '3.65'
+            gpa: '3.65',
+            ectsEarned: '240'
         }
     ];
 
     const handleViewDetails = (studentId) => {
-        // This will be implemented later
-        console.log('View details for student:', studentId);
+        const student = students.find(s => s.id === studentId);
+        setSelectedStudent(student);
+        setShowViewDetails(true);
+    };
+
+    const handleBack = () => {
+        setShowViewDetails(false);
+        setSelectedStudent(null);
     };
 
     const handleSendToSecretary = () => {
         // This will be implemented later
         console.log('Sending student list to secretary');
     };
+
+    if (showViewDetails && selectedStudent) {
+        return (
+            <div className="advisor-container">
+                <div className="sidebar">
+                    <div 
+                        className={`sidebar-item ${activeTab === 'Notifications' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('Notifications')}
+                    >
+                        Notifications
+                    </div>
+                    <div 
+                        className={`sidebar-item ${activeTab === 'Student List' ? 'active' : ''}`}
+                        onClick={() => {
+                            setActiveTab('Student List');
+                            handleBack();
+                        }}
+                    >
+                        Student List
+                    </div>
+                </div>
+                <div className="main-content">
+                    <div className="view-details-header">
+                        <button className="back-btn" onClick={handleBack}>
+                            ← Back to Student List
+                        </button>
+                    </div>
+                    <ViewDetails student={selectedStudent} />
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="advisor-container">

@@ -129,3 +129,25 @@
 .send-list-btn:hover {
     background-color: #2d8a46;
 }
+
+.view-details-header {
+    margin-bottom: 24px;
+}
+
+.back-btn {
+    padding: 8px 16px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    color: #333;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    background-color: #e9ecef;
+}
