@@ -2,6 +2,7 @@ package com.iztech.gsmBackend.service.Impl;
 
 import com.iztech.gsmBackend.dto.AdvisorDto;
 import com.iztech.gsmBackend.dto.StudentDto;
+import com.iztech.gsmBackend.enums.STATUS;
 import com.iztech.gsmBackend.model.Student;
 import com.iztech.gsmBackend.model.Transcript;
 import com.iztech.gsmBackend.repository.IStudentRepository;
@@ -72,6 +73,7 @@ public class StudentService implements IStudentService {
         dto.setGpa(student.getGpa());
         dto.setDepartment(student.getDepartment());
         dto.setEctsEarned(student.getEctsEarned());
+        dto.setStatus(student.getStatus().name());
         dto.setFaculty(student.getFaculty());
 
         if (student.getAdvisor() != null) {
@@ -83,5 +85,15 @@ public class StudentService implements IStudentService {
         }
         return dto;
     }
+
+    @Override
+    public void updateStudentStatus(Long studentId, STATUS status) {
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+
+        student.setStatus(status);
+        studentRepository.save(student);
+    }
+
 
 }

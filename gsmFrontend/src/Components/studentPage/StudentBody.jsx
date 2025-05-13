@@ -40,6 +40,7 @@ const StudentBody = () => {
     try {
       const data = await StudentService.getStudentDetails(userId);
       setStudentData(data); // GPA, department vs.
+      console.log("✅ studentData:", data); // <--- BURAYI EKLE
     } catch (err) {
       console.error("Student details fetch error", err);
     }
@@ -90,6 +91,7 @@ const StudentBody = () => {
 
   const getApprovalStatus = () => {
     if (!studentData) return [];
+    console.log("Student Data:", studentData);
     return [
       { 
         label: `Advisor: ${studentData.advisorDto?.firstName || '--'} ${studentData.advisorDto?.lastName || '--'}`, 

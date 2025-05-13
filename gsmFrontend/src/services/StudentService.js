@@ -25,6 +25,12 @@ const StudentService = {
   return response.data;
   },
 
+  // StudentService.js
+  updateStatus: (studentId, newStatus) => {
+  return api.put(`/students/${studentId}/status`, null, {
+    params: { status: newStatus }
+    });
+  }
 };
 
 export default StudentService; 

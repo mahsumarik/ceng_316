@@ -13,4 +13,8 @@ public interface IStudentController {
     ResponseEntity<String> deleteTranscript(@PathVariable Long studentId);
 
     ResponseEntity<StudentDto> getStudentById(@PathVariable Long studentId);
+
+    ResponseEntity<String> approveStudent(@PathVariable Long studentId);
+
+    ResponseEntity<String> rejectStudent(@PathVariable Long studentId);
 }
