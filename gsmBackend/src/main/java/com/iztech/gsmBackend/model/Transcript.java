@@ -10,8 +10,8 @@ import lombok.Setter;
 @Setter
 public class Transcript extends Document {
 
-    @OneToOne
-    @JoinColumn(name = "student_id")
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "student_id", nullable = false)
     private Student student; // Transcript ile ilişkilendirilen öğrenci
 
 }
