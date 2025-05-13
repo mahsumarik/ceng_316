@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import './DeanBody.css';
+import ViewDetails from './ViewDetails';
 
 const DeanBody = () => {
     const [activeTab, setActiveTab] = useState('Departments');
     const [searchTerm, setSearchTerm] = useState('');
+    const [selectedStudent, setSelectedStudent] = useState(null);
+    const [showViewDetails, setShowViewDetails] = useState(false);
 
     // Mock data for departments
     const departments = [
@@ -35,13 +38,15 @@ const DeanBody = () => {
             id: '1001',
             name: 'Alice Johnson',
             status: 'Approved',
-            gpa: '3.95'
+            gpa: '3.95',
+            ectsEarned: '240'
         },
         {
             id: '1002',
             name: 'Bob Smith',
             status: 'Approved',
-            gpa: '3.65'
+            gpa: '3.65',
+            ectsEarned: '240'
         }
     ];
 
@@ -51,9 +56,53 @@ const DeanBody = () => {
     };
 
     const handleViewDetails = (studentId) => {
-        // This will be implemented later
-        console.log('View details for student:', studentId);
+        const student = students.find(s => s.id === studentId);
+        setSelectedStudent(student);
+        setShowViewDetails(true);
     };
+
+    const handleBack = () => {
+        setShowViewDetails(false);
+        setSelectedStudent(null);
+    };
+
+    if (showViewDetails && selectedStudent) {
+        return (
+            <div className="dean-container">
+                <div className="sidebar">
+                    <div 
+                        className={`sidebar-item ${activeTab === 'Notifications' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('Notifications')}
+                    >
+                        Notifications
+                    </div>
+                    <div 
+                        className={`sidebar-item ${activeTab === 'Your Students' ? 'active' : ''}`}
+                        onClick={() => {
+                            setActiveTab('Your Students');
+                            handleBack();
+                        }}
+                    >
+                        Your Students
+                    </div>
+                    <div 
+                        className={`sidebar-item ${activeTab === 'Departments' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('Departments')}
+                    >
+                        Departments
+                    </div>
+                </div>
+                <div className="main-content">
+                    <div className="view-details-header">
+                        <button className="back-btn" onClick={handleBack}>
+                            ← Back to Student List
+                        </button>
+                    </div>
+                    <ViewDetails student={selectedStudent} />
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="dean-container">

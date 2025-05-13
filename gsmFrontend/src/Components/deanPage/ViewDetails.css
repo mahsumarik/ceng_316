@@ -1,0 +1,43 @@
+.details-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.graduation-details-box {
+  padding: 30px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  margin-bottom: 24px;
+  color: #333;
+  font-size: 24px;
+}
+
+.student-info-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.info-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.info-group label {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.info-value {
+  font-size: 16px;
+  color: #333;
+  font-weight: 500;
+}
