@@ -1,5 +1,7 @@
 package com.iztech.gsmBackend.service.Impl;
 
+import com.iztech.gsmBackend.dto.AdvisorDto;
+import com.iztech.gsmBackend.dto.StudentDto;
 import com.iztech.gsmBackend.model.Student;
 import com.iztech.gsmBackend.model.Transcript;
 import com.iztech.gsmBackend.repository.IStudentRepository;
@@ -57,4 +59,29 @@ public class StudentService implements IStudentService {
         Transcript transcript = transcriptOptional.get();
         transcriptRepository.delete(transcript); // Veritabanından silme işlemi
     }
+
+    @Override
+    public StudentDto getStudentById(Long studentId) {
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+
+        StudentDto dto = new StudentDto();
+        dto.setId(student.getId());
+        dto.setFirstName(student.getFirstName());
+        dto.setLastName(student.getLastName());
+        dto.setGpa(student.getGpa());
+        dto.setDepartment(student.getDepartment());
+        dto.setEctsEarned(student.getEctsEarned());
+        dto.setFaculty(student.getFaculty());
+
+        if (student.getAdvisor() != null) {
+            AdvisorDto advisorDto = new AdvisorDto();
+            advisorDto.setId(student.getAdvisor().getId());
+            advisorDto.setFirstName(student.getAdvisor().getFirstName());
+            advisorDto.setLastName(student.getAdvisor().getLastName());
+            dto.setAdvisorDto(advisorDto);
+        }
+        return dto;
+    }
+
 }

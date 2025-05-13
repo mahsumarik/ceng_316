@@ -19,7 +19,12 @@ const StudentService = {
   deleteTranscript: (studentId) => {
     return api.delete(`/students/${studentId}/transcript`);
   },
-  
+
+  getStudentDetails: async (studentId) => {
+  const response = await api.get(`/students/${studentId}`);
+  return response.data;
+  },
+
 };
 
 export default StudentService; 

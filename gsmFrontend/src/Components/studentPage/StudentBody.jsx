@@ -4,12 +4,6 @@ import { useAuth } from '../../context/AuthContext'; // AuthContext'ten kullanı
 import StudentService from '../../services/StudentService';
 
 
-const DUMMY_APPROVAL = [
-  { label: 'Advisor', status: 'Approved', color: 'green' },
-  { label: 'Department Secretary', status: 'Pending', color: 'orange' },
-  { label: "Dean's Office", status: 'Pending', color: 'orange' },
-  { label: 'Student Affair', status: 'Pending', color: 'orange' },
-];
 const DUMMY_OVERALL = {
   gpa: 3.75,
   department: '--',
@@ -23,6 +17,7 @@ const StudentBody = () => {
   const [activeMenu, setActiveMenu] = useState('Graduation Details');
   const [transcript, setTranscript] = useState(DUMMY_TRANSCRIPT); // null veya {url:...}
   const fileInputRef = useRef();
+  const [studentData, setStudentData] = useState(null);
   
 
   useEffect(() => {
@@ -38,6 +33,21 @@ const StudentBody = () => {
     };
     fetchTranscript();
   }, [userId]);
+
+  useEffect(() => {
+  const fetchStudentData = async () => {
+    if (!userId) return;
+    try {
+      const data = await StudentService.getStudentDetails(userId);
+      setStudentData(data); // GPA, department vs.
+    } catch (err) {
+      console.error("Student details fetch error", err);
+    }
+  };
+
+  fetchStudentData();
+}, [userId]);
+
 
   // Transcript yükleme
   const handleUpload = async (e) => {
@@ -78,6 +88,20 @@ const StudentBody = () => {
     }
   };
 
+  const getApprovalStatus = () => {
+    if (!studentData) return [];
+    return [
+      { 
+        label: `Advisor: ${studentData.advisorDto?.firstName || '--'} ${studentData.advisorDto?.lastName || '--'}`, 
+        status: studentData.advisor?.pendingStatus || 'Pending', 
+        color: studentData.advisor?.pendingStatus === 'Approved' ? 'green' : 'orange' 
+      },
+      { label: 'Department Secretary', status: 'Pending', color: 'orange' },
+      { label: "Dean's Office", status: 'Pending', color: 'orange' },
+      { label: 'Student Affair', status: 'Pending', color: 'orange' },
+    ];
+  };
+
   return (
     <div className="student-body-root">
       <aside className="student-sidebar">
@@ -92,7 +116,7 @@ const StudentBody = () => {
               <section className="approval-status">
                 <h3>Approval Status</h3>
                 <div className="approval-list">
-                  {DUMMY_APPROVAL.map((item) => (
+                  {getApprovalStatus().map((item) => (
                     <div key={item.label} className="approval-item">
                       <span className="approval-label">{item.label}</span>
                       <span className={`approval-status-text ${item.color}`}>{item.status}</span>
@@ -103,7 +127,8 @@ const StudentBody = () => {
               <section className="overall-status">
                 <h3>Overall</h3>
                 <div className="overall-list">
-                  <div><b>GPA</b> <span>{DUMMY_OVERALL.gpa}</span></div>
+                  <div><b>GPA</b> <span>{studentData?.gpa ?? '--'}</span></div>
+                  <div><b>ECTS</b> <span>{studentData?.ectsEarned ?? '--'}</span></div>
                   <div><b>Department Rating</b> <span>{DUMMY_OVERALL.department}</span></div>
                   <div><b>Faculty Rating</b> <span>{DUMMY_OVERALL.faculty}</span></div>
                   <div><b>University Rating</b> <span>{DUMMY_OVERALL.university}</span></div>

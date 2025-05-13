@@ -1,5 +1,6 @@
 package com.iztech.gsmBackend.service;
 
+import com.iztech.gsmBackend.dto.StudentDto;
 import com.iztech.gsmBackend.model.Transcript;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,4 +13,6 @@ public interface IStudentService {
     Transcript getTranscript(Long studentId);
 
     void deleteTranscript(Long studentId);
+
+    StudentDto getStudentById(Long studentId);
 }
