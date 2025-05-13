@@ -12,4 +12,5 @@ public class StudentDto {
     private String faculty;
     private int ectsEarned;
     private AdvisorDto advisorDto;
+    private String studentNumber;
 }
