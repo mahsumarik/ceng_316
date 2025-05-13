@@ -1,6 +1,7 @@
 package com.iztech.gsmBackend.controller.Impl;
 
 import com.iztech.gsmBackend.controller.IStudentController;
+import com.iztech.gsmBackend.dto.StudentDto;
 import com.iztech.gsmBackend.service.IStudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -36,4 +37,12 @@ public class StudentController implements IStudentController {
         studentService.deleteTranscript(studentId); // Transkripti silme işlemi
         return ResponseEntity.ok("Transcript deleted successfully.");
     }
+
+    @Override
+    @GetMapping("/{studentId}")
+    public ResponseEntity<StudentDto> getStudentById(@PathVariable Long studentId) {
+        StudentDto studentDTO = studentService.getStudentById(studentId);
+        return ResponseEntity.ok(studentDTO);
+    }
+
 }

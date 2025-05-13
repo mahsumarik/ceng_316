@@ -14,11 +14,9 @@ import java.util.List;
 @SuperBuilder
 public class Advisor extends User {
     @OneToMany(mappedBy = "advisor")
-
     private List<Student> students;
 
     @OneToMany(mappedBy = "advisor")
-
     private List<StudentList> studentLists;
 
     @Column(nullable = true)
