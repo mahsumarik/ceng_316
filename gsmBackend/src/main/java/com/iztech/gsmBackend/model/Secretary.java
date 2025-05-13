@@ -16,7 +16,6 @@ public class Secretary extends User {
     private String department;
 
     @OneToMany(mappedBy = "secretary")
-
     private List<StudentList> studentLists;
 
     private String faculty;
