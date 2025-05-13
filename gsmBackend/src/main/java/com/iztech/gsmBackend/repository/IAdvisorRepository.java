@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface IAdvisorRepository extends JpaRepository<Advisor,Long> {
     Optional<Advisor> findByEmail(String email);
+    Optional<Advisor> findById(Long id);
 }
