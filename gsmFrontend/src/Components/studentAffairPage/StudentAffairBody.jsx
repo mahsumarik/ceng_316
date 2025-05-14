@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './StudentAffairBody.css';
 import ViewDetails from './ViewDetails';
+import { useAuth } from '../../context/AuthContext';
+import NotificationService from '../../services/NotificationService';
 
 const StudentAffairBody = () => {
     const [activeTab, setActiveTab] = useState('Student List');
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedStudent, setSelectedStudent] = useState(null);
     const [showViewDetails, setShowViewDetails] = useState(false);
+    const { userId } = useAuth();
+    const [notifications, setNotifications] = useState([]);
 
     // Mock data for students
     const students = [
@@ -45,6 +49,28 @@ const StudentAffairBody = () => {
             studentListStatus: 'Sent'
         }
     ];
+
+    useEffect(() => {
+        const loadNotifications = async () => {
+            try {
+                const notificationsData = await NotificationService.getNotifications(userId);
+                setNotifications(notificationsData);
+            } catch (err) {
+                console.error("Failed to load notifications:", err);
+            }
+        };
+        loadNotifications();
+    }, [userId]);
+
+    const handleDeleteNotification = async (index) => {
+        try {
+            await NotificationService.deleteNotification(userId, index);
+            const updatedNotifications = await NotificationService.getNotifications(userId);
+            setNotifications(updatedNotifications);
+        } catch (err) {
+            console.error("Failed to delete notification:", err);
+        }
+    };
 
     const handleSendNotification = (facultyName) => {
         // This will be implemented later
@@ -220,9 +246,27 @@ const StudentAffairBody = () => {
                         </div>
                     </>
                 ) : (
-                    <div>
+                    <div className="notifications-section">
                         <h2>Notifications</h2>
-                        <p>No notifications to display.</p>
+                        <div className="notifications-list">
+                            {notifications.length === 0 ? (
+                                <div className="no-notifications">No notifications to display.</div>
+                            ) : (
+                                notifications.map((notification, index) => (
+                                    <div key={index} className="notification-item">
+                                        <div className="notification-content">
+                                            <div className="notification-message">{notification.message}</div>
+                                        </div>
+                                        <button 
+                                            className="delete-notification-btn"
+                                            onClick={() => handleDeleteNotification(index)}
+                                        >
+                                            Delete
+                                        </button>
+                                    </div>
+                                ))
+                            )}
+                        </div>
                     </div>
                 )}
             </div>

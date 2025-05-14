@@ -2,6 +2,7 @@ package com.iztech.gsmBackend.service.Impl;
 
 import com.iztech.gsmBackend.dto.AdvisorDto;
 import com.iztech.gsmBackend.dto.StudentDto;
+import com.iztech.gsmBackend.enums.ROLE;
 import com.iztech.gsmBackend.enums.STATUS;
 import com.iztech.gsmBackend.model.Student;
 import com.iztech.gsmBackend.model.Transcript;
@@ -15,6 +16,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Optional;
+
+import static com.iztech.gsmBackend.enums.ROLE.*;
 
 @Service
 public class StudentService implements IStudentService {
@@ -77,7 +80,10 @@ public class StudentService implements IStudentService {
         dto.setGpa(student.getGpa());
         dto.setDepartment(student.getDepartment());
         dto.setEctsEarned(student.getEctsEarned());
-        dto.setStatus(student.getStatus() != null ? student.getStatus().name() : "PENDING");
+        dto.setAdvisorStatus(student.getAdvisorStatus() != null ? student.getAdvisorStatus().name() : "PENDING");
+        dto.setSecretaryStatus(student.getSecretaryStatus() != null ? student.getSecretaryStatus().name() : "PENDING");
+        dto.setDeanStatus(student.getDeanStatus() != null ? student.getDeanStatus().name() : "PENDING");
+        dto.setStudentAffairStatus(student.getStudentAffairStatus() != null ? student.getStudentAffairStatus().name() : "PENDING");
         dto.setFaculty(student.getFaculty());
 
         if (student.getAdvisor() != null) {
@@ -91,23 +97,21 @@ public class StudentService implements IStudentService {
     }
 
     @Override
-    public void updateStudentStatus(Long studentId, STATUS status) {
-        try {
-            Student student = studentRepository.findById(studentId)
-                    .orElseThrow(() -> new RuntimeException("Student not found with id: " + studentId));
+    public void updateStudentStatus(Long studentId, STATUS status, ROLE role) {
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new RuntimeException("Student not found with id: " + studentId));
 
-            // Status değerini string olarak kontrol et
-            String statusStr = status.name();
-            if (!statusStr.equals("PENDING") && !statusStr.equals("APPROVED") && !statusStr.equals("REJECTED")) {
-                throw new RuntimeException("Invalid status value: " + statusStr);
-            }
-
-            student.setStatus(status);
-            studentRepository.save(student);
-            notificationService.sendStudentNotification(studentId, status.name());
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to update student status: " + e.getMessage());
+        switch (role) {
+            case ADVISOR -> student.setAdvisorStatus(status);
+            case DEAN -> student.setDeanStatus(status);
+            case SECRETARY -> student.setSecretaryStatus(status);
+            case STUDENT_AFFAIRS -> student.setStudentAffairStatus(status);
+            default -> throw new RuntimeException("This role cannot update status.");
         }
+
+        studentRepository.save(student);
+        notificationService.sendStudentNotification(studentId, status.name());
     }
+
 
 }

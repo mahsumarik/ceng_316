@@ -1,6 +1,8 @@
 package com.iztech.gsmBackend.controller;
 
 import com.iztech.gsmBackend.dto.StudentDto;
+import com.iztech.gsmBackend.enums.ROLE;
+import com.iztech.gsmBackend.enums.STATUS;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,10 +16,13 @@ public interface IStudentController {
     ResponseEntity<String> deleteTranscript(@PathVariable Long studentId);
 
     ResponseEntity<StudentDto> getStudentById(@PathVariable Long studentId);
+    ResponseEntity<String> updateStudentStatus(@PathVariable Long studentId, STATUS status, ROLE role);
 
-    ResponseEntity<String> approveStudent(@PathVariable Long studentId);
+    //ResponseEntity<String> approveStudent(@PathVariable Long studentId);
 
-    ResponseEntity<String> rejectStudent(@PathVariable Long studentId);
+    //ResponseEntity<String> rejectStudent(@PathVariable Long studentId);
 
-    ResponseEntity<String> pendingStudent(@PathVariable Long studentId);
+    //ResponseEntity<String> pendingStudent(@PathVariable Long studentId);
+
+
 }

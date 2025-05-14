@@ -1,9 +1,8 @@
-import React, { useState, useRef,useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './StudentBody.css';
-import { useAuth } from '../../context/AuthContext'; // AuthContext'ten kullanıcı bilgilerini alıyoruz
+import { useAuth } from '../../context/AuthContext';
 import StudentService from '../../services/StudentService';
 import NotificationService from '../../services/NotificationService';
-
 
 const DUMMY_OVERALL = {
   gpa: 3.75,
@@ -11,16 +10,16 @@ const DUMMY_OVERALL = {
   faculty: '--',
   university: '--',
 };
-const DUMMY_TRANSCRIPT = null; // null ise yükleme, obje ise görüntüleme/indirme
+
+const DUMMY_TRANSCRIPT = null;
 
 const StudentBody = () => {
-  const { userId } = useAuth(); // AuthContext'ten kullanıcı bilgilerini alıyoruz
+  const { userId } = useAuth();
   const [activeMenu, setActiveMenu] = useState('Graduation Details');
-  const [transcript, setTranscript] = useState(DUMMY_TRANSCRIPT); // null veya {url:...}
+  const [transcript, setTranscript] = useState(DUMMY_TRANSCRIPT);
   const fileInputRef = useRef();
   const [studentData, setStudentData] = useState(null);
   const [notifications, setNotifications] = useState([]);
-  
 
   useEffect(() => {
     const fetchTranscript = async () => {
@@ -28,8 +27,7 @@ const StudentBody = () => {
       try {
         const blob = await StudentService.downloadTranscript(userId);
         setTranscript({ url: window.URL.createObjectURL(blob) });
-      } catch (err) {
-        // Transcript yoksa veya hata varsa transcript null kalır
+      } catch {
         setTranscript(null);
       }
     };
@@ -37,44 +35,39 @@ const StudentBody = () => {
   }, [userId]);
 
   useEffect(() => {
-  const fetchStudentData = async () => {
-    if (!userId) return;
-    try {
-      const data = await StudentService.getStudentDetails(userId);
-      setStudentData(data); // GPA, department vs.
-      console.log("✅ studentData:", data); // <--- BURAYI EKLE
-    } catch (err) {
-      console.error("Student details fetch error", err);
-    }
-  };
+    const fetchStudentData = async () => {
+      if (!userId) return;
+      try {
+        const data = await StudentService.getStudentDetails(userId);
+        setStudentData(data);
+      } catch (err) {
+        console.error("Student details fetch error", err);
+      }
+    };
+    fetchStudentData();
+  }, [userId]);
 
-  fetchStudentData();
-}, [userId]);
+  useEffect(() => {
+    const loadNotifications = async () => {
+      try {
+        const notificationsData = await NotificationService.getNotifications(userId);
+        setNotifications(notificationsData);
+      } catch (err) {
+        console.error("Failed to load notifications:", err);
+      }
+    };
+    loadNotifications();
+  }, [userId]);
 
-useEffect(() => {
-  const loadNotifications = async () => {
-    try {
-      const notificationsData = await NotificationService.getNotifications(userId);
-      setNotifications(notificationsData);
-    } catch (err) {
-      console.error("Failed to load notifications:", err);
-    }
-  };
-
-  loadNotifications();
-}, [userId]);
-
-  // Transcript yükleme
   const handleUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    await StudentService.uploadTranscript(userId, file); // studentId'yi kullanarak gönderiyoruz
+    await StudentService.uploadTranscript(userId, file);
     setTranscript({ url: URL.createObjectURL(file) });
   };
 
-  // Transcript indirme
   const handleDownload = async () => {
-    const blob = await StudentService.downloadTranscript(userId); // studentId'yi kullanarak indirme işlemi yapıyoruz
+    const blob = await StudentService.downloadTranscript(userId);
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -83,19 +76,17 @@ useEffect(() => {
     window.URL.revokeObjectURL(url);
   };
 
-  // Transcript görüntüleme
   const handleShowTranscript = async () => {
     if (!transcript) {
       const blob = await StudentService.downloadTranscript(userId);
       const url = window.URL.createObjectURL(blob);
       setTranscript({ url });
-      window.open(url, "_blank"); // Yeni sekmede aç
+      window.open(url, "_blank");
     } else {
-      window.open(transcript.url, "_blank"); // Yeni sekmede aç
+      window.open(transcript.url, "_blank");
     }
   };
 
-  // Transcript silme
   const handleRemoveTranscript = async () => {
     if (window.confirm("Are you sure you want to remove your transcript?")) {
       await StudentService.deleteTranscript(userId);
@@ -103,30 +94,60 @@ useEffect(() => {
     }
   };
 
-  const getApprovalStatus = () => {
-    if (!studentData) return [];
-    console.log("Student Data:", studentData);
-    return [
-      { 
-        label: `Advisor: ${studentData.advisorDto?.firstName || '--'} ${studentData.advisorDto?.lastName || '--'}`, 
-        status: studentData.status || 'PENDING',
-        color: studentData.status === 'APPROVED' ? 'green' : studentData.status === 'REJECTED' ? 'red' : 'orange', 
-      },
-      { label: 'Department Secretary', status: 'PENDING', color: 'orange' },
-      { label: "Dean's Office", status: 'PENDING', color: 'orange' },
-      { label: 'Student Affair', status: 'PENDING', color: 'orange' },
-    ];
-  };
-
   const handleDeleteNotification = async (index) => {
     try {
       await NotificationService.deleteNotification(userId, index);
-      // Notification'ları yeniden yükle
-      const updatedNotifications = await NotificationService.getNotifications(userId);
-      setNotifications(updatedNotifications);
+      const updated = await NotificationService.getNotifications(userId);
+      setNotifications(updated);
     } catch (err) {
       console.error("Failed to delete notification:", err);
     }
+  };
+
+  const getApprovalStatus = () => {
+    if (!studentData) return [];
+    return [
+      {
+        label: `Advisor: ${studentData.advisorDto?.firstName || '--'} ${studentData.advisorDto?.lastName || '--'}`,
+        status: studentData.advisorStatus || 'PENDING',
+        color:
+          studentData.advisorStatus === 'APPROVED'
+            ? 'green'
+            : studentData.advisorStatus === 'REJECTED'
+            ? 'red'
+            : 'orange',
+      },
+      {
+        label: 'Department Secretary',
+        status: studentData.secretaryStatus || 'PENDING',
+        color:
+          studentData.secretaryStatus === 'APPROVED'
+            ? 'green'
+            : studentData.secretaryStatus === 'REJECTED'
+            ? 'red'
+            : 'orange',
+      },
+      {
+        label: "Dean's Office",
+        status: studentData.deanStatus || 'PENDING',
+        color:
+          studentData.deanStatus === 'APPROVED'
+            ? 'green'
+            : studentData.deanStatus === 'REJECTED'
+            ? 'red'
+            : 'orange',
+      },
+      {
+        label: 'Student Affair',
+        status: studentData.studentAffairStatus || 'PENDING',
+        color:
+          studentData.studentAffairStatus === 'APPROVED'
+            ? 'green'
+            : studentData.studentAffairStatus === 'REJECTED'
+            ? 'red'
+            : 'orange',
+      },
+    ];
   };
 
   return (
@@ -134,11 +155,11 @@ useEffect(() => {
       <aside className="student-sidebar">
         <button className={activeMenu === 'Notifications' ? 'active' : ''} onClick={() => setActiveMenu('Notifications')}>
           Notifications
-          {notifications.length > 0 && (
-            <span className="notification-badge">{notifications.length}</span>
-          )}
+          {notifications.length > 0 && <span className="notification-badge">{notifications.length}</span>}
         </button>
-        <button className={activeMenu === 'Graduation Details' ? 'active' : ''} onClick={() => setActiveMenu('Graduation Details')}>Graduation Details</button>
+        <button className={activeMenu === 'Graduation Details' ? 'active' : ''} onClick={() => setActiveMenu('Graduation Details')}>
+          Graduation Details
+        </button>
       </aside>
       <main className="student-main">
         {activeMenu === 'Graduation Details' && (
@@ -176,12 +197,11 @@ useEffect(() => {
                 </div>
               ) : (
                 <div className="transcript-actions">
-                    <button onClick={handleShowTranscript}>View</button>
-                    <button onClick={handleDownload}>Download</button>
-                    <button className="remove-btn" onClick={handleRemoveTranscript}>Remove</button>
+                  <button onClick={handleShowTranscript}>View</button>
+                  <button onClick={handleDownload}>Download</button>
+                  <button className="remove-btn" onClick={handleRemoveTranscript}>Remove</button>
                 </div>
               )}
-              
             </section>
           </div>
         )}
@@ -197,7 +217,7 @@ useEffect(() => {
                     <div className="notification-content">
                       <div className="notification-message">{notification.message}</div>
                     </div>
-                    <button 
+                    <button
                       className="delete-notification-btn"
                       onClick={() => handleDeleteNotification(index)}
                     >

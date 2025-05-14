@@ -13,5 +13,8 @@ public class StudentDto {
     private int ectsEarned;
     private AdvisorDto advisorDto;
     private String studentNumber;
-    private String status;  // enum to string
+    private String advisorStatus;
+    private String secretaryStatus;
+    private String deanStatus;
+    private String studentAffairStatus;
 }
