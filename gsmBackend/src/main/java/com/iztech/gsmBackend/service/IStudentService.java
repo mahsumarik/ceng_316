@@ -1,6 +1,7 @@
 package com.iztech.gsmBackend.service;
 
 import com.iztech.gsmBackend.dto.StudentDto;
+import com.iztech.gsmBackend.enums.STATUS;
 import com.iztech.gsmBackend.model.Transcript;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,4 +16,6 @@ public interface IStudentService {
     void deleteTranscript(Long studentId);
 
     StudentDto getStudentById(Long studentId);
+
+    void updateStudentStatus(Long studentId, STATUS status);
 }

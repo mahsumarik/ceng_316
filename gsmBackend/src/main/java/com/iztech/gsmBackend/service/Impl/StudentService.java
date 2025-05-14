@@ -2,10 +2,12 @@ package com.iztech.gsmBackend.service.Impl;
 
 import com.iztech.gsmBackend.dto.AdvisorDto;
 import com.iztech.gsmBackend.dto.StudentDto;
+import com.iztech.gsmBackend.enums.STATUS;
 import com.iztech.gsmBackend.model.Student;
 import com.iztech.gsmBackend.model.Transcript;
 import com.iztech.gsmBackend.repository.IStudentRepository;
 import com.iztech.gsmBackend.repository.ITranscriptRepository;
+import com.iztech.gsmBackend.service.INotificationService;
 import com.iztech.gsmBackend.service.IStudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,9 @@ public class StudentService implements IStudentService {
 
     @Autowired
     private ITranscriptRepository transcriptRepository;
+
+    @Autowired
+    private INotificationService notificationService;
 
 
     @Override
@@ -72,6 +77,7 @@ public class StudentService implements IStudentService {
         dto.setGpa(student.getGpa());
         dto.setDepartment(student.getDepartment());
         dto.setEctsEarned(student.getEctsEarned());
+        dto.setStatus(student.getStatus() != null ? student.getStatus().name() : "PENDING");
         dto.setFaculty(student.getFaculty());
 
         if (student.getAdvisor() != null) {
@@ -82,6 +88,26 @@ public class StudentService implements IStudentService {
             dto.setAdvisorDto(advisorDto);
         }
         return dto;
+    }
+
+    @Override
+    public void updateStudentStatus(Long studentId, STATUS status) {
+        try {
+            Student student = studentRepository.findById(studentId)
+                    .orElseThrow(() -> new RuntimeException("Student not found with id: " + studentId));
+
+            // Status değerini string olarak kontrol et
+            String statusStr = status.name();
+            if (!statusStr.equals("PENDING") && !statusStr.equals("APPROVED") && !statusStr.equals("REJECTED")) {
+                throw new RuntimeException("Invalid status value: " + statusStr);
+            }
+
+            student.setStatus(status);
+            studentRepository.save(student);
+            notificationService.sendStudentNotification(studentId, status.name());
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to update student status: " + e.getMessage());
+        }
     }
 
 }

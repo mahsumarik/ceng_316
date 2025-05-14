@@ -28,7 +28,10 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/api/auth/**").permitAll()
-                    .requestMatchers(HttpMethod.DELETE, "/api/students/**").authenticated()
+                    .requestMatchers(HttpMethod.GET, "/api/students/**").permitAll()
+                    .requestMatchers(HttpMethod.PUT, "/api/students/*/approve").hasAnyRole("ADVISOR", "SECRETARY", "DEAN")
+                    .requestMatchers(HttpMethod.PUT, "/api/students/*/reject").hasAnyRole("ADVISOR", "SECRETARY", "DEAN")
+                    .requestMatchers(HttpMethod.DELETE, "/api/students/**").permitAll()
                     .anyRequest().authenticated()
             )
             .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

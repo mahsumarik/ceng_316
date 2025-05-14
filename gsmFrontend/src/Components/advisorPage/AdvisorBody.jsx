@@ -130,7 +130,7 @@ const AdvisorBody = () => {
                                         </div>
                                         <div className="student-details">Student ID: {student.studentNumber}</div>
                                         <div className="student-details">
-                                            Status: <span className="status-approved">Approved</span>
+                                            Status: <span className={`status-text ${student.status?.toLowerCase()}`}>{student.status}</span>
                                         </div>
                                     </div>
                                     <button

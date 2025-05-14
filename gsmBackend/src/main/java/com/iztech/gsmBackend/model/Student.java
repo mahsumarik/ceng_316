@@ -1,5 +1,6 @@
 package com.iztech.gsmBackend.model;
 
+import com.iztech.gsmBackend.enums.STATUS;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -15,12 +16,22 @@ import java.time.LocalDate;
 @SuperBuilder
 public class Student extends User {
     private String studentNumber;
+
     private String department;
+
     private String faculty;
+
     private LocalDate enrollmentDate;
+
     private Boolean graduationStatus;
+
     private Double gpa;
+
     private int ectsEarned;
+
+    @Column(columnDefinition = "VARCHAR(10)")
+    @Enumerated(EnumType.STRING)
+    private STATUS status = STATUS.PENDING;
     
     @ManyToOne
     @JoinColumn(name = "advisor_id")

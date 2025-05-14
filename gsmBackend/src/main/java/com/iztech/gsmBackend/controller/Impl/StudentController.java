@@ -2,11 +2,15 @@ package com.iztech.gsmBackend.controller.Impl;
 
 import com.iztech.gsmBackend.controller.IStudentController;
 import com.iztech.gsmBackend.dto.StudentDto;
+import com.iztech.gsmBackend.enums.STATUS;
+import com.iztech.gsmBackend.service.INotificationService;
 import com.iztech.gsmBackend.service.IStudentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import com.iztech.gsmBackend.model.Student;
 
 @RestController
 @RequestMapping("/api/students")
@@ -14,6 +18,9 @@ public class StudentController implements IStudentController {
 
     @Autowired
     private IStudentService studentService;
+
+    @Autowired
+    private INotificationService notificationService;
 
     @Override
     @PostMapping("/{studentId}/upload-transcript")
@@ -26,9 +33,15 @@ public class StudentController implements IStudentController {
     @Override
     @GetMapping("/{studentId}/transcript")
     public ResponseEntity<byte[]> getTranscript(@PathVariable Long studentId) {
-        return ResponseEntity.ok()
-                .header("Content-Type", "application/pdf")  // Dosyanın türünü belirtiyoruz
-                .body(studentService.getTranscript(studentId).getContent());
+        try {
+            byte[] content = studentService.getTranscript(studentId).getContent();
+            return ResponseEntity.ok()
+                    .header("Content-Type", "application/pdf")
+                    .body(content);
+        } catch (RuntimeException e) {
+            notificationService.notifyStudentToUploadTranscript(studentId);
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @Override
@@ -43,6 +56,40 @@ public class StudentController implements IStudentController {
     public ResponseEntity<StudentDto> getStudentById(@PathVariable Long studentId) {
         StudentDto studentDTO = studentService.getStudentById(studentId);
         return ResponseEntity.ok(studentDTO);
+    }
+
+    @Override
+    @PutMapping("/{studentId}/approve")
+    public ResponseEntity<String> approveStudent(@PathVariable Long studentId) {
+        studentService.updateStudentStatus(studentId, STATUS.APPROVED);
+        notificationService.sendStudentNotification(studentId, STATUS.APPROVED.name());
+        return ResponseEntity.ok("Student approved");
+    }
+
+    @Override
+    @PutMapping("/{studentId}/reject")
+    public ResponseEntity<String> rejectStudent(@PathVariable Long studentId) {
+        try {
+            studentService.updateStudentStatus(studentId, STATUS.REJECTED);
+            notificationService.sendStudentNotification(studentId, STATUS.REJECTED.name());
+            return ResponseEntity.ok("Student rejected successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to reject student: " + e.getMessage());
+        }
+    }
+
+    @Override
+    @PutMapping("/{studentId}/pending")
+    public ResponseEntity<String> pendingStudent(@PathVariable Long studentId) {
+        try {
+            studentService.updateStudentStatus(studentId, STATUS.PENDING);
+            notificationService.sendStudentNotification(studentId, STATUS.PENDING.name());
+            return ResponseEntity.ok("Student status set to pending");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to update student status: " + e.getMessage());
+        }
     }
 
 }

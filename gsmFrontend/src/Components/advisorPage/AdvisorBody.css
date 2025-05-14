@@ -221,3 +221,45 @@
     background-color: #e9ecef;
     border-color: #ced4da;
 }
+
+.status-badge {
+    font-weight: bold;
+    padding: 4px 12px;
+    border-radius: 12px;
+    display: inline-block;
+    min-width: 70px;
+    text-align: center;
+}
+
+.status-badge.approved {
+    background: #e6f9ed;
+    color: #219653;
+    border: 1px solid #219653;
+}
+
+.status-badge.rejected {
+    background: #ffeaea;
+    color: #d32f2f;
+    border: 1px solid #d32f2f;
+}
+
+.status-badge.pending {
+    background: #fff8e1;
+    color: #f39c12;
+    border: 1px solid #f39c12;
+}
+
+.status-text.approved {
+    color: #219653;
+    font-weight: bold;
+}
+
+.status-text.rejected {
+    color: #d32f2f;
+    font-weight: bold;
+}
+
+.status-text.pending {
+    color: #f39c12;
+    font-weight: bold;
+}

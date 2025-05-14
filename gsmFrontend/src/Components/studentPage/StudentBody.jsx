@@ -2,6 +2,7 @@ import React, { useState, useRef,useEffect } from 'react';
 import './StudentBody.css';
 import { useAuth } from '../../context/AuthContext'; // AuthContext'ten kullanıcı bilgilerini alıyoruz
 import StudentService from '../../services/StudentService';
+import NotificationService from '../../services/NotificationService';
 
 
 const DUMMY_OVERALL = {
@@ -18,6 +19,7 @@ const StudentBody = () => {
   const [transcript, setTranscript] = useState(DUMMY_TRANSCRIPT); // null veya {url:...}
   const fileInputRef = useRef();
   const [studentData, setStudentData] = useState(null);
+  const [notifications, setNotifications] = useState([]);
   
 
   useEffect(() => {
@@ -40,6 +42,7 @@ const StudentBody = () => {
     try {
       const data = await StudentService.getStudentDetails(userId);
       setStudentData(data); // GPA, department vs.
+      console.log("✅ studentData:", data); // <--- BURAYI EKLE
     } catch (err) {
       console.error("Student details fetch error", err);
     }
@@ -48,6 +51,18 @@ const StudentBody = () => {
   fetchStudentData();
 }, [userId]);
 
+useEffect(() => {
+  const loadNotifications = async () => {
+    try {
+      const notificationsData = await NotificationService.getNotifications(userId);
+      setNotifications(notificationsData);
+    } catch (err) {
+      console.error("Failed to load notifications:", err);
+    }
+  };
+
+  loadNotifications();
+}, [userId]);
 
   // Transcript yükleme
   const handleUpload = async (e) => {
@@ -90,22 +105,39 @@ const StudentBody = () => {
 
   const getApprovalStatus = () => {
     if (!studentData) return [];
+    console.log("Student Data:", studentData);
     return [
       { 
         label: `Advisor: ${studentData.advisorDto?.firstName || '--'} ${studentData.advisorDto?.lastName || '--'}`, 
-        status: studentData.advisor?.pendingStatus || 'Pending', 
-        color: studentData.advisor?.pendingStatus === 'Approved' ? 'green' : 'orange' 
+        status: studentData.status || 'PENDING',
+        color: studentData.status === 'APPROVED' ? 'green' : studentData.status === 'REJECTED' ? 'red' : 'orange', 
       },
-      { label: 'Department Secretary', status: 'Pending', color: 'orange' },
-      { label: "Dean's Office", status: 'Pending', color: 'orange' },
-      { label: 'Student Affair', status: 'Pending', color: 'orange' },
+      { label: 'Department Secretary', status: 'PENDING', color: 'orange' },
+      { label: "Dean's Office", status: 'PENDING', color: 'orange' },
+      { label: 'Student Affair', status: 'PENDING', color: 'orange' },
     ];
+  };
+
+  const handleDeleteNotification = async (index) => {
+    try {
+      await NotificationService.deleteNotification(userId, index);
+      // Notification'ları yeniden yükle
+      const updatedNotifications = await NotificationService.getNotifications(userId);
+      setNotifications(updatedNotifications);
+    } catch (err) {
+      console.error("Failed to delete notification:", err);
+    }
   };
 
   return (
     <div className="student-body-root">
       <aside className="student-sidebar">
-        <button className={activeMenu === 'Notifications' ? 'active' : ''} onClick={() => setActiveMenu('Notifications')}>Notifications</button>
+        <button className={activeMenu === 'Notifications' ? 'active' : ''} onClick={() => setActiveMenu('Notifications')}>
+          Notifications
+          {notifications.length > 0 && (
+            <span className="notification-badge">{notifications.length}</span>
+          )}
+        </button>
         <button className={activeMenu === 'Graduation Details' ? 'active' : ''} onClick={() => setActiveMenu('Graduation Details')}>Graduation Details</button>
       </aside>
       <main className="student-main">
@@ -154,7 +186,28 @@ const StudentBody = () => {
           </div>
         )}
         {activeMenu === 'Notifications' && (
-          <div className="notifications-placeholder">No notifications yet.</div>
+          <div className="notifications-section">
+            <h2>Notifications</h2>
+            <div className="notifications-list">
+              {notifications.length === 0 ? (
+                <div className="no-notifications">No notifications to display.</div>
+              ) : (
+                notifications.map((notification, index) => (
+                  <div key={index} className="notification-item">
+                    <div className="notification-content">
+                      <div className="notification-message">{notification.message}</div>
+                    </div>
+                    <button 
+                      className="delete-notification-btn"
+                      onClick={() => handleDeleteNotification(index)}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
         )}
       </main>
     </div>
