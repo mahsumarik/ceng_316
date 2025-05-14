@@ -1,7 +1,7 @@
 package com.iztech.gsmBackend.enums;
 
 public enum STATUS {
-    PENDIING,
+    PENDING,
     APPROVED,
     REJECTED,
 

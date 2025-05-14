@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './ViewDetails.css';
 import StudentService from '../../services/StudentService';
 
+
 const ViewDetails = ({ student }) => {
   const [transcriptUrl, setTranscriptUrl] = useState(null);
   const [statusMessage, setStatusMessage] = useState(null);
@@ -21,14 +22,17 @@ const ViewDetails = ({ student }) => {
   }, [student]);
 
   const handleStatusUpdate = async (status) => {
-    try {
-      await StudentService.updateStatus(student.id, status);
-      setStatusMessage(`Student has been ${status.toLowerCase()}.`);
-    } catch (err) {
-      console.error("Status update failed:", err);
-      setStatusMessage("Failed to update status.");
-    }
-  };
+  console.log("🔁 Trying to update status:", status);
+  try {
+    await StudentService.updateStatus(student.id, status);
+    console.log("✅ API success");
+    setStatusMessage(`Student has been ${status.toLowerCase()}.`);
+    student.status = status;
+  } catch (err) {
+    console.error("❌ Failed to update status:", err);
+  }
+};
+
 
   const handleView = () => {
     if (transcriptUrl) {
@@ -70,8 +74,27 @@ const ViewDetails = ({ student }) => {
         </div>
 
         <div className="action-buttons">
-          <button className="approve-btn" onClick={() => handleStatusUpdate('APPROVED')}>Approve</button>
-          <button className="reject-btn" onClick={() => handleStatusUpdate('REJECTED')}>Reject</button>
+          <button 
+            className={`approve-btn ${student.status === 'APPROVED' ? 'disabled' : ''}`}
+            onClick={() => handleStatusUpdate('APPROVED')}
+            disabled={student.status === 'APPROVED'}
+          >
+            Approve
+          </button>
+          <button 
+            className={`reject-btn ${student.status === 'REJECTED' ? 'disabled' : ''}`}
+            onClick={() => handleStatusUpdate('REJECTED')}
+            disabled={student.status === 'REJECTED'}
+          >
+            Reject
+          </button>
+          <button 
+            className={`pending-btn ${student.status === 'PENDING' ? 'disabled' : ''}`}
+            onClick={() => handleStatusUpdate('PENDING')}
+            disabled={student.status === 'PENDING'}
+          >
+            Pending
+          </button>
         </div>
 
         {statusMessage && (

@@ -29,8 +29,9 @@ public class Student extends User {
 
     private int ectsEarned;
 
+    @Column(columnDefinition = "VARCHAR(10)")
     @Enumerated(EnumType.STRING)
-    private STATUS status = STATUS.PENDIING;
+    private STATUS status = STATUS.PENDING;
     
     @ManyToOne
     @JoinColumn(name = "advisor_id")
