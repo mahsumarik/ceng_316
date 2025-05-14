@@ -26,17 +26,14 @@ const StudentService = {
   },
 
   // StudentService.js
-  updateStatus: (studentId, newStatus) => {
-    if (newStatus === "APPROVED") {
-      return api.put(`/students/${studentId}/approve`);
-    } else if (newStatus === "REJECTED") {
-      return api.put(`/students/${studentId}/reject`);
-    } else if (newStatus === "PENDING") {
-      return api.put(`/students/${studentId}/pending`);
-    } else {
-      console.error("‼️ Unknown status sent:", newStatus);
-    }
-  }
+  updateStatus: (studentId, newStatus, role) => {
+  return api.put(`/students/${studentId}/status`, null, {
+    params: {
+      status: newStatus,
+      role: role,
+    },
+  });
+}
 
 
 };

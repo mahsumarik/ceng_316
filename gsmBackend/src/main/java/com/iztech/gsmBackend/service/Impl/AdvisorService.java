@@ -28,7 +28,10 @@ public class AdvisorService implements IAdvisorService {
             dto.setDepartment(student.getDepartment());
             dto.setFaculty(student.getFaculty());
             dto.setStudentNumber(student.getStudentNumber());
-            dto.setStatus(student.getStatus() != null ? student.getStatus().name() : "PENDING");
+            dto.setAdvisorStatus(student.getAdvisorStatus() != null ? student.getAdvisorStatus().name() : "PENDING");
+            dto.setSecretaryStatus(student.getSecretaryStatus() != null ? student.getSecretaryStatus().name() : "PENDING");
+            dto.setDeanStatus(student.getDeanStatus() != null ? student.getDeanStatus().name() : "PENDING");
+            dto.setStudentAffairStatus(student.getStudentAffairStatus() != null ? student.getStudentAffairStatus().name() : "PENDING");
             dto.setEctsEarned(student.getEctsEarned());
             return dto;
         }).collect(Collectors.toList());

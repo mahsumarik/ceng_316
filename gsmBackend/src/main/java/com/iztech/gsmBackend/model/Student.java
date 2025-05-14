@@ -29,10 +29,6 @@ public class Student extends User {
 
     private int ectsEarned;
 
-    @Column(columnDefinition = "VARCHAR(10)")
-    @Enumerated(EnumType.STRING)
-    private STATUS status = STATUS.PENDING;
-    
     @ManyToOne
     @JoinColumn(name = "advisor_id")
     private Advisor advisor;
@@ -42,4 +38,20 @@ public class Student extends User {
     
     @OneToOne(mappedBy = "student")
     private Diploma diploma;
+
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(10)")
+    private STATUS advisorStatus = STATUS.PENDING;
+
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(10)")
+    private STATUS secretaryStatus = STATUS.PENDING;
+
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(10)")
+    private STATUS deanStatus = STATUS.PENDING;
+
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(10)")
+    private STATUS studentAffairStatus = STATUS.PENDING;
 }

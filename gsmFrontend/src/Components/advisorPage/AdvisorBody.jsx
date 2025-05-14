@@ -3,6 +3,7 @@ import './AdvisorBody.css';
 import ViewDetails from './ViewDetails';
 import AdvisorService from '../../services/AdvisorService';
 import { useAuth } from '../../context/AuthContext';
+import NotificationService from '../../services/NotificationService';
 
 const AdvisorBody = () => {
     const { userId } = useAuth();  // advisorId = userId
@@ -13,7 +14,10 @@ const AdvisorBody = () => {
     const [students, setStudents] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const studentsPerPage = 5;
+    const [notifications, setNotifications] = useState([]);
 
+
+    //******************************************************************************************************** */
     useEffect(() => {
         const fetchStudents = async () => {
             try {
@@ -24,8 +28,22 @@ const AdvisorBody = () => {
             }
         };
 
-        if (userId) fetchStudents();
+        const loadNotifications = async () => {
+            try {
+                const notificationsData = await NotificationService.getNotifications(userId);
+                setNotifications(notificationsData);
+            } catch (err) {
+                console.error("Failed to load notifications:", err);
+            }
+        };
+
+        if (userId) {
+            fetchStudents();
+            loadNotifications();
+        }
     }, [userId]);
+
+    //******************************************************************************************************** */
 
     const handleViewDetails = (studentId) => {
         const student = students.find(s => s.id === studentId);
@@ -33,15 +51,27 @@ const AdvisorBody = () => {
         setShowViewDetails(true);
     };
 
+    //******************************************************************************************************** */
     const handleBack = () => {
         setShowViewDetails(false);
         setSelectedStudent(null);
     };
+    //******************************************************************************************************** */
 
     const handleSendToSecretary = () => {
         console.log('Sending student list to secretary');
     };
 
+    const handleDeleteNotification = async (index) => {
+        try {
+            await NotificationService.deleteNotification(userId, index);
+            const updatedNotifications = await NotificationService.getNotifications(userId);
+            setNotifications(updatedNotifications);
+        } catch (err) {
+            console.error("Failed to delete notification:", err);
+        }
+    };
+    //******************************************************************************************************** */
     // Pagination calculations
     const indexOfLastStudent = currentPage * studentsPerPage;
     const indexOfFirstStudent = indexOfLastStudent - studentsPerPage;
@@ -61,32 +91,32 @@ const AdvisorBody = () => {
     };
 
     if (showViewDetails && selectedStudent) {
-        return (
-            <div className="advisor-container">
-                <div className="sidebar">
-                    <div className={`sidebar-item ${activeTab === 'Notifications' ? 'active' : ''}`}
-                         onClick={() => setActiveTab('Notifications')}>
-                        Notifications
-                    </div>
-                    <div className={`sidebar-item ${activeTab === 'Student List' ? 'active' : ''}`}
-                         onClick={() => {
-                             setActiveTab('Student List');
-                             handleBack();
-                         }}>
-                        Student List
-                    </div>
-                </div>
-                <div className="main-content">
-                    <div className="view-details-header">
-                        <button className="back-btn" onClick={handleBack}>
-                            ← Back to Student List
-                        </button>
-                    </div>
-                    <ViewDetails student={selectedStudent} />
-                </div>
-            </div>
-        );
-    }
+    return (
+      <div className="advisor-container">
+        <div className="sidebar">
+          <div className={`sidebar-item ${activeTab === 'Notifications' ? 'active' : ''}`}
+               onClick={() => setActiveTab('Notifications')}>
+            Notifications
+          </div>
+          <div className={`sidebar-item ${activeTab === 'Student List' ? 'active' : ''}`}
+               onClick={() => {
+                 setActiveTab('Student List');
+                 handleBack();
+               }}>
+            Student List
+          </div>
+        </div>
+        <div className="main-content">
+          <div className="view-details-header">
+            <button className="back-btn" onClick={handleBack}>
+              ← Back to Student List
+            </button>
+          </div>
+          <ViewDetails student={selectedStudent} setSelectedStudent={setSelectedStudent} />
+        </div>
+      </div>
+    );
+  }
 
     return (
         <div className="advisor-container">
@@ -130,7 +160,7 @@ const AdvisorBody = () => {
                                         </div>
                                         <div className="student-details">Student ID: {student.studentNumber}</div>
                                         <div className="student-details">
-                                            Status: <span className={`status-text ${student.status?.toLowerCase()}`}>{student.status}</span>
+                                            Status: <span className={`status-text ${student.advisorStatus?.toLowerCase()}`}>{student.advisorStatus}</span>
                                         </div>
                                     </div>
                                     <button
@@ -191,8 +221,27 @@ const AdvisorBody = () => {
                         </div>
                     </>
                 ) : (
-                    <div>
+                    <div className="notifications-section">
                         <h2>Notifications</h2>
+                        <div className="notifications-list">
+                            {notifications.length === 0 ? (
+                                <div className="no-notifications">No notifications to display.</div>
+                            ) : (
+                                notifications.map((notification, index) => (
+                                    <div key={index} className="notification-item">
+                                        <div className="notification-content">
+                                            <div className="notification-message">{notification.message}</div>
+                                        </div>
+                                        <button 
+                                            className="delete-notification-btn"
+                                            onClick={() => handleDeleteNotification(index)}
+                                        >
+                                            Delete
+                                        </button>
+                                    </div>
+                                ))
+                            )}
+                        </div>
                     </div>
                 )}
             </div>

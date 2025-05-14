@@ -2,6 +2,7 @@ package com.iztech.gsmBackend.controller.Impl;
 
 import com.iztech.gsmBackend.controller.IStudentController;
 import com.iztech.gsmBackend.dto.StudentDto;
+import com.iztech.gsmBackend.enums.ROLE;
 import com.iztech.gsmBackend.enums.STATUS;
 import com.iztech.gsmBackend.service.INotificationService;
 import com.iztech.gsmBackend.service.IStudentService;
@@ -59,6 +60,24 @@ public class StudentController implements IStudentController {
     }
 
     @Override
+    @PutMapping("/{studentId}/status")
+    public ResponseEntity<String> updateStudentStatus(
+            @PathVariable Long studentId,
+            @RequestParam STATUS status,
+            @RequestParam ROLE role
+    ) {
+        try {
+            studentService.updateStudentStatus(studentId, status, role);
+            notificationService.sendStudentNotification(studentId, status.name());
+            return ResponseEntity.ok("Student status updated successfully for role: " + role.name());
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to update student status: " + e.getMessage());
+        }
+    }
+
+    /*
+    @Override
     @PutMapping("/{studentId}/approve")
     public ResponseEntity<String> approveStudent(@PathVariable Long studentId) {
         studentService.updateStudentStatus(studentId, STATUS.APPROVED);
@@ -91,5 +110,6 @@ public class StudentController implements IStudentController {
                     .body("Failed to update student status: " + e.getMessage());
         }
     }
+     */
 
 }

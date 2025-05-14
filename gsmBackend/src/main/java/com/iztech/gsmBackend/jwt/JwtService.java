@@ -24,7 +24,7 @@ public class JwtService {
                 .claim("firstName", firstName)
                 .claim("userId", userId)  // User ID'yi buraya ekliyoruz
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 2))  // 2 saatlik geçerlilik
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))  // 24 saatlik geçerlilik
                 .signWith(getKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -44,14 +44,7 @@ public class JwtService {
         return exportToken(token, Claims::getSubject);
     }
 
-    public String getRoleByToken(String token) {
-        return exportToken(token, claims -> claims.get("role", String.class));
-    }
 
-    // Token'dan userId'yi alıyoruz
-    public Long getUserIdByToken(String token) {
-        return exportToken(token, claims -> claims.get("userId", Long.class));
-    }
 
     public boolean isTokenExpired(String token) {
         Date expirationDate = exportToken(token, Claims::getExpiration);

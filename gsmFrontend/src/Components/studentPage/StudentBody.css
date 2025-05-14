@@ -82,6 +82,21 @@
   border-radius: 12px;
   padding: 24px 20px;
 }
+
+.approval-status-text.green {
+  color: green;
+  font-weight: bold;
+}
+
+.approval-status-text.orange {
+  color: orange;
+  font-weight: bold;
+}
+
+.approval-status-text.red {
+  color: red;
+  font-weight: bold;
+}
 .approval-list {
   margin-top: 12px;
 }
