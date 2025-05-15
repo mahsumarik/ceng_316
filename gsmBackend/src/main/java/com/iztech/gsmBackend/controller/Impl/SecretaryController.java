@@ -2,14 +2,15 @@ package com.iztech.gsmBackend.controller.Impl;
 
 import com.iztech.gsmBackend.controller.ISecretaryController;
 import com.iztech.gsmBackend.service.ISecretaryService;
+import com.iztech.gsmBackend.dto.AdvisorStatusDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@RestController
+@RequestMapping("/api/secretary")
 public class SecretaryController implements ISecretaryController {
 
     @Autowired
@@ -18,7 +19,7 @@ public class SecretaryController implements ISecretaryController {
 
     @Override
     @GetMapping("/advisor-statuses")
-    public ResponseEntity<List<String>> getAdvisorStatuses(@RequestParam String department) {
+    public ResponseEntity<List<AdvisorStatusDto>> getAdvisorStatuses(@RequestParam String department) {
         return ResponseEntity.ok(secretaryService.getAdvisorStatusesByDepartment(department));
     }
 

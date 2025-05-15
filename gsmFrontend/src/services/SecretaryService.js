@@ -16,11 +16,17 @@ const SecretaryService = {
   },
 
   getApprovedStudents: async (secretaryId) => {
-    const response = await api.get('/secretary/approved-students', {
-      params: { secretaryId }
-    });
-    console.log(response.data)
-    return response.data;
+    try {
+      const response = await api.get('/secretary/approved-students', {
+        params: { secretaryId }
+      });
+      console.log("Raw response:", response);
+      console.log("Response data:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching approved students:", error);
+      throw error;
+    }
   },
 
   getDepartment: async (secretaryId) => {

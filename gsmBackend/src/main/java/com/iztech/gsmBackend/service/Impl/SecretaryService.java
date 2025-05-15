@@ -1,12 +1,15 @@
 package com.iztech.gsmBackend.service.Impl;
 
+import com.iztech.gsmBackend.dto.AdvisorStatusDto;
 import com.iztech.gsmBackend.dto.StudentDto;
+import com.iztech.gsmBackend.enums.STATUS;
 import com.iztech.gsmBackend.model.Advisor;
 import com.iztech.gsmBackend.model.Secretary;
 import com.iztech.gsmBackend.model.StudentList;
 import com.iztech.gsmBackend.repository.IAdvisorRepository;
 import com.iztech.gsmBackend.repository.ISecretaryRepository;
 import com.iztech.gsmBackend.repository.IStudentListRepository;
+import com.iztech.gsmBackend.repository.ITranscriptRepository;
 import com.iztech.gsmBackend.service.INotificationService;
 import com.iztech.gsmBackend.service.ISecretaryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,15 +33,22 @@ public class SecretaryService implements ISecretaryService {
     @Autowired
     private ISecretaryRepository secretaryRepository;
 
+    @Autowired
+    private ITranscriptRepository transcriptRepository;
+    
     @Override
-    public List<String> getAdvisorStatusesByDepartment(String department) {
+    public List<AdvisorStatusDto> getAdvisorStatusesByDepartment(String department) {
         List<Advisor> advisors = advisorRepository.findAll().stream()
                 .filter(a -> department.equalsIgnoreCase(a.getDepartment()))
                 .toList();
 
         return advisors.stream().map(advisor -> {
             boolean hasSent = !studentListRepository.findByAdvisorId(advisor.getId()).isEmpty();
-            return advisor.getFirstName() + " " + advisor.getLastName() + " - " + (hasSent ? "SENT" : "PENDING");
+            AdvisorStatusDto dto = new AdvisorStatusDto();
+            dto.setAdvisorId(advisor.getId());
+            dto.setName(advisor.getFirstName() + " " + advisor.getLastName());
+            dto.setStatus(hasSent ? "SENT" : "PENDING");
+            return dto;
         }).toList();
     }
 
@@ -60,20 +70,21 @@ public class SecretaryService implements ISecretaryService {
     public List<StudentDto> getApprovedStudentsForSecretary(Long secretaryId) {
 
         List<StudentList> lists = studentListRepository.findBySecretaryId(secretaryId);
-        System.out.println("📦 Found StudentList size: " + lists.size());  // KAYIT VAR MI?
 
-        for (StudentList list : lists) {
-            System.out.println("🔁 List: " + list.getAdvisor().getId() + " -> Advisor: " + list.getAdvisor().getFirstName());
-        }
 
         return lists.stream()
                 .flatMap(list -> list.getStudents().stream())
+                .filter(student ->
+                        student.getAdvisorStatus() == STATUS.APPROVED &&
+                                transcriptRepository.existsByStudentId(student.getId())
+                )
                 .map(student -> {
                     StudentDto dto = new StudentDto();
                     dto.setId(student.getId());
                     dto.setFirstName(student.getFirstName());
                     dto.setLastName(student.getLastName());
                     dto.setGpa(student.getGpa());
+                    dto.setStudentNumber(student.getStudentNumber());
                     dto.setDepartment(student.getDepartment());
                     dto.setEctsEarned(student.getEctsEarned());
                     dto.setAdvisorStatus(student.getAdvisorStatus() != null ? student.getAdvisorStatus().name() : "PENDING");

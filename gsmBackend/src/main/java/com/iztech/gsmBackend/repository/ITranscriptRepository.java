@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface ITranscriptRepository extends JpaRepository<Transcript,Long > {
 
     Optional<Transcript> findByStudentId(Long studentId);
+
+    boolean existsByStudentId(Long studentId);
 }

@@ -6,9 +6,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
+import com.iztech.gsmBackend.dto.AdvisorStatusDto;
+
 public interface ISecretaryController {
 
-    ResponseEntity<List<String>> getAdvisorStatuses(@RequestParam String department);
+    ResponseEntity<List<AdvisorStatusDto>> getAdvisorStatuses(@RequestParam String department);
     ResponseEntity<String> notifyAdvisor(@RequestParam Long advisorId);
 
     @GetMapping("/approved-students")
