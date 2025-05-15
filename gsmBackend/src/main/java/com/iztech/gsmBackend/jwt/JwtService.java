@@ -44,6 +44,10 @@ public class JwtService {
         return exportToken(token, Claims::getSubject);
     }
 
+    public String extractRole(String token) {
+        return exportToken(token, claims -> claims.get("role", String.class));
+    }
+
 
 
     public boolean isTokenExpired(String token) {

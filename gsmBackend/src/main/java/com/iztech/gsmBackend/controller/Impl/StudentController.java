@@ -76,40 +76,4 @@ public class StudentController implements IStudentController {
         }
     }
 
-    /*
-    @Override
-    @PutMapping("/{studentId}/approve")
-    public ResponseEntity<String> approveStudent(@PathVariable Long studentId) {
-        studentService.updateStudentStatus(studentId, STATUS.APPROVED);
-        notificationService.sendStudentNotification(studentId, STATUS.APPROVED.name());
-        return ResponseEntity.ok("Student approved");
-    }
-
-    @Override
-    @PutMapping("/{studentId}/reject")
-    public ResponseEntity<String> rejectStudent(@PathVariable Long studentId) {
-        try {
-            studentService.updateStudentStatus(studentId, STATUS.REJECTED);
-            notificationService.sendStudentNotification(studentId, STATUS.REJECTED.name());
-            return ResponseEntity.ok("Student rejected successfully");
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to reject student: " + e.getMessage());
-        }
-    }
-
-    @Override
-    @PutMapping("/{studentId}/pending")
-    public ResponseEntity<String> pendingStudent(@PathVariable Long studentId) {
-        try {
-            studentService.updateStudentStatus(studentId, STATUS.PENDING);
-            notificationService.sendStudentNotification(studentId, STATUS.PENDING.name());
-            return ResponseEntity.ok("Student status set to pending");
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to update student status: " + e.getMessage());
-        }
-    }
-     */
-
 }

@@ -27,7 +27,7 @@ public class StudentList extends Document {
     @JoinColumn(name = "dean_id")
     private Dean dean; // Dekan ile ilişki (Many-to-One)
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "student_list_students",
             joinColumns = @JoinColumn(name = "student_list_id"),

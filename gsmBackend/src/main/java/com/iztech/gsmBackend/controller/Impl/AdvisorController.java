@@ -21,4 +21,11 @@ public class AdvisorController implements IAdvisorController {
     public ResponseEntity<List<StudentDto>> getStudentsByAdvisor(@PathVariable Long advisorId) {
         return ResponseEntity.ok(advisorService.getStudentsByAdvisorId(advisorId));
     }
+
+    @Override
+    @PostMapping("/{advisorId}/send-to-secretary")
+    public ResponseEntity<String> sendStudentListToSecretary(@PathVariable Long advisorId) {
+        advisorService.sendApprovedStudentsToSecretary(advisorId);
+        return ResponseEntity.ok("Approved students sent to secretary.");
+    }
 }

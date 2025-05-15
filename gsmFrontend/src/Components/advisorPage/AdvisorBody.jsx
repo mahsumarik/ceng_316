@@ -58,8 +58,18 @@ const AdvisorBody = () => {
     };
     //******************************************************************************************************** */
 
-    const handleSendToSecretary = () => {
-        console.log('Sending student list to secretary');
+    const handleSendToSecretary = async () => {
+    try {
+        await AdvisorService.sendApprovedStudentsToSecretary(userId);
+        alert("Success");
+    } catch (error) {
+        console.error("Full error object:", error);
+        if (error.response) {
+            console.log("Status:", error.response.status);
+            console.log("Data:", error.response.data);
+        }
+            alert("Failed to send: " + error.response?.data || error.message);
+    }
     };
 
     const handleDeleteNotification = async (index) => {
@@ -93,19 +103,15 @@ const AdvisorBody = () => {
     if (showViewDetails && selectedStudent) {
     return (
       <div className="advisor-container">
-        <div className="sidebar">
-          <div className={`sidebar-item ${activeTab === 'Notifications' ? 'active' : ''}`}
-               onClick={() => setActiveTab('Notifications')}>
+        <aside className="student-sidebar">
+          <button className={activeTab === 'Notifications' ? 'active' : ''} onClick={() => setActiveTab('Notifications')}>
             Notifications
-          </div>
-          <div className={`sidebar-item ${activeTab === 'Student List' ? 'active' : ''}`}
-               onClick={() => {
-                 setActiveTab('Student List');
-                 handleBack();
-               }}>
+            {notifications.length > 0 && <span className="notification-badge">{notifications.length}</span>}
+          </button>
+          <button className={activeTab === 'Student List' ? 'active' : ''} onClick={() => { setActiveTab('Student List'); handleBack(); }}>
             Student List
-          </div>
-        </div>
+          </button>
+        </aside>
         <div className="main-content">
           <div className="view-details-header">
             <button className="back-btn" onClick={handleBack}>
@@ -120,17 +126,15 @@ const AdvisorBody = () => {
 
     return (
         <div className="advisor-container">
-            <div className="sidebar">
-                <div className={`sidebar-item ${activeTab === 'Notifications' ? 'active' : ''}`}
-                     onClick={() => setActiveTab('Notifications')}>
+            <aside className="student-sidebar">
+                <button className={activeTab === 'Notifications' ? 'active' : ''} onClick={() => setActiveTab('Notifications')}>
                     Notifications
-                </div>
-                <div className={`sidebar-item ${activeTab === 'Student List' ? 'active' : ''}`}
-                     onClick={() => setActiveTab('Student List')}>
+                    {notifications.length > 0 && <span className="notification-badge">{notifications.length}</span>}
+                </button>
+                <button className={activeTab === 'Student List' ? 'active' : ''} onClick={() => setActiveTab('Student List')}>
                     Student List
-                </div>
-            </div>
-
+                </button>
+            </aside>
             <div className="main-content">
                 {activeTab === 'Student List' ? (
                     <>
@@ -232,7 +236,7 @@ const AdvisorBody = () => {
                                         <div className="notification-content">
                                             <div className="notification-message">{notification.message}</div>
                                         </div>
-                                        <button 
+                                        <button
                                             className="delete-notification-btn"
                                             onClick={() => handleDeleteNotification(index)}
                                         >
