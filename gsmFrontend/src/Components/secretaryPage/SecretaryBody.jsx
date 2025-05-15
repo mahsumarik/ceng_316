@@ -3,6 +3,7 @@ import './SecretaryBody.css';
 import ViewDetails from './ViewDetails';
 import { useAuth } from '../../context/AuthContext';
 import NotificationService from '../../services/NotificationService';
+import SecretaryService from '../../services/SecretaryService'; // Yeni eklendi
 
 const SecretaryBody = () => {
     const [activeTab, setActiveTab] = useState('Student List');
@@ -11,48 +12,8 @@ const SecretaryBody = () => {
     const [showViewDetails, setShowViewDetails] = useState(false);
     const { userId } = useAuth();
     const [notifications, setNotifications] = useState([]);
-
-    // Mock data for students
-    const students = [
-        {
-            id: '1001',
-            name: 'Alice Johnson',
-            status: 'Approved',
-            gpa: '3.95',
-            ectsEarned: '240'
-        },
-        {
-            id: '1002',
-            name: 'Bob Smith',
-            status: 'Approved',
-            gpa: '3.65',
-            ectsEarned: '240'
-        }
-    ];
-
-    // Mock data for advisors
-    const advisors = [
-        {
-            name: 'Dr. Alice Brown',
-            studentListStatus: 'Pending'
-        },
-        {
-            name: 'Prof. Bob Green',
-            studentListStatus: 'Sent'
-        },
-        {
-            name: 'Dr. Clara White',
-            studentListStatus: 'Pending'
-        },
-        {
-            name: 'Prof. Xavier',
-            studentListStatus: 'Pending'
-        },
-        {
-            name: 'Dr. Hill',
-            studentListStatus: 'Sent'
-        }
-    ];
+    const [advisorStatuses, setAdvisorStatuses] = useState([]);
+    const [students, setStudents] = useState([]); // Backend'den gelecek onaylanmışlar
 
     useEffect(() => {
         const loadNotifications = async () => {
@@ -63,16 +24,54 @@ const SecretaryBody = () => {
                 console.error("Failed to load notifications:", err);
             }
         };
+
+        const fetchAdvisorStatuses = async () => {
+            try {
+                const department = await SecretaryService.getDepartment(userId); // Sekreterin departmanı
+                const statusData = await SecretaryService.getAdvisorStatuses(department);
+                setAdvisorStatuses(statusData);
+            } catch (err) {
+                console.error("Failed to fetch advisor statuses:", err);
+            }
+        };
+
+        const fetchApprovedStudents = async () => {
+            try {
+                const data = await SecretaryService.getApprovedStudents(userId);
+                console.log("📦 Students fetched from backend:", data);  // RESPONSE
+                setStudents(data);
+            } catch (err) {
+                console.error("Failed to fetch students:", err);
+            }
+        }
+
         loadNotifications();
+        fetchAdvisorStatuses();
+        fetchApprovedStudents();
     }, [userId]);
 
     const handleDeleteNotification = async (index) => {
         try {
             await NotificationService.deleteNotification(userId, index);
-            const updatedNotifications = await NotificationService.getNotifications(userId);
-            setNotifications(updatedNotifications);
+            const updated = await NotificationService.getNotifications(userId);
+            setNotifications(updated);
         } catch (err) {
             console.error("Failed to delete notification:", err);
+        }
+    };
+
+    const handleSendNotification = async (advisorId, advisorName) => {
+        try {
+            await SecretaryService.notifyAdvisor(advisorId);
+            setAdvisorStatuses(prev =>
+                prev.map(item =>
+                    item.advisorId === advisorId
+                        ? { ...item, status: 'SENT' }
+                        : item
+                )
+            );
+        } catch (err) {
+            alert("Notification already sent or failed.");
         }
     };
 
@@ -87,13 +86,8 @@ const SecretaryBody = () => {
         setSelectedStudent(null);
     };
 
-    const handleSendNotification = (advisorName) => {
-        // This will be implemented later
-        console.log('Sending notification to advisor:', advisorName);
-    };
-
     const handleSendToDean = () => {
-        // This will be implemented later
+        // İleride uygulanacak
         console.log('Sending student list to dean');
     };
 
@@ -101,33 +95,13 @@ const SecretaryBody = () => {
         return (
             <div className="secretary-container">
                 <div className="sidebar">
-                    <div 
-                        className={`sidebar-item ${activeTab === 'Notifications' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('Notifications')}
-                    >
-                        Notifications
-                    </div>
-                    <div 
-                        className={`sidebar-item ${activeTab === 'Student List' ? 'active' : ''}`}
-                        onClick={() => {
-                            setActiveTab('Student List');
-                            handleBack();
-                        }}
-                    >
-                        Student List
-                    </div>
-                    <div 
-                        className={`sidebar-item ${activeTab === 'Advisors' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('Advisors')}
-                    >
-                        Advisors
-                    </div>
+                    <div className={`sidebar-item ${activeTab === 'Notifications' ? 'active' : ''}`} onClick={() => setActiveTab('Notifications')}>Notifications</div>
+                    <div className={`sidebar-item ${activeTab === 'Student List' ? 'active' : ''}`} onClick={() => { setActiveTab('Student List'); handleBack(); }}>Student List</div>
+                    <div className={`sidebar-item ${activeTab === 'Advisors' ? 'active' : ''}`} onClick={() => setActiveTab('Advisors')}>Advisors</div>
                 </div>
                 <div className="main-content">
                     <div className="view-details-header">
-                        <button className="back-btn" onClick={handleBack}>
-                            ← Back to Student List
-                        </button>
+                        <button className="back-btn" onClick={handleBack}> ← Back to Student List </button>
                     </div>
                     <ViewDetails student={selectedStudent} />
                 </div>
@@ -138,24 +112,9 @@ const SecretaryBody = () => {
     return (
         <div className="secretary-container">
             <div className="sidebar">
-                <div 
-                    className={`sidebar-item ${activeTab === 'Notifications' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('Notifications')}
-                >
-                    Notifications
-                </div>
-                <div 
-                    className={`sidebar-item ${activeTab === 'Student List' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('Student List')}
-                >
-                    Student List
-                </div>
-                <div 
-                    className={`sidebar-item ${activeTab === 'Advisors' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('Advisors')}
-                >
-                    Advisors
-                </div>
+                <div className={`sidebar-item ${activeTab === 'Notifications' ? 'active' : ''}`} onClick={() => setActiveTab('Notifications')}>Notifications</div>
+                <div className={`sidebar-item ${activeTab === 'Student List' ? 'active' : ''}`} onClick={() => setActiveTab('Student List')}>Student List</div>
+                <div className={`sidebar-item ${activeTab === 'Advisors' ? 'active' : ''}`} onClick={() => setActiveTab('Advisors')}>Advisors</div>
             </div>
 
             <div className="main-content">
@@ -163,42 +122,26 @@ const SecretaryBody = () => {
                     <>
                         <div className="section-header">
                             <h2>Your Students</h2>
-                            <button className="send-to-dean-btn" onClick={handleSendToDean}>
-                                Send Student List to Dean's Office
-                            </button>
+                            <button className="send-to-dean-btn" onClick={handleSendToDean}>Send Student List to Dean's Office</button>
                         </div>
                         <div className="search-section">
                             <label className="search-label">Search Student:</label>
-                            <input
-                                type="text"
-                                className="search-input"
-                                placeholder="Enter Student Name or ID"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
+                            <input type="text" className="search-input" placeholder="Enter Student Name or ID" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
                         </div>
                         <div>
                             {students
-                                .filter(student => 
-                                    student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                    student.id.includes(searchTerm)
+                                .filter(student =>
+                                    (`${student.firstName} ${student.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                    student.id.toString().includes(searchTerm))
                                 )
                                 .map(student => (
                                     <div key={student.id} className="student-card">
-                                        <div className="student-info">
-                                            <div className="student-name">Student Name: {student.name}</div>
-                                            <div className="student-details">Student ID: {student.id}</div>
-                                            <div className="student-details">
-                                                Status: <span className="status-approved">{student.status}</span>
-                                            </div>
-                                            <div className="student-details">GPA: {student.gpa}</div>
-                                        </div>
-                                        <button 
-                                            className="view-details-btn"
-                                            onClick={() => handleViewDetails(student.id)}
-                                        >
-                                            View Details
-                                        </button>
+                                    <div className="student-info">
+                                        <div className="student-name">Student Name: {student.firstName} {student.lastName}</div>
+                                        <div className="student-details">Student ID: {student.id}</div>
+                                        <div className="student-details">GPA: {student.gpa}</div>
+                                    </div>
+                                    <button className="view-details-btn" onClick={() => handleViewDetails(student.id)}>View Details</button>
                                     </div>
                                 ))}
                         </div>
@@ -209,24 +152,15 @@ const SecretaryBody = () => {
                             <h2>Advisors</h2>
                         </div>
                         <div>
-                            {advisors.map((advisor, index) => (
+                            {advisorStatuses.map((advisor, index) => (
                                 <div key={index} className="advisor-card">
                                     <div className="advisor-info">
                                         <div className="advisor-name">Name: {advisor.name}</div>
                                     </div>
                                     <div className="student-list-status">
-                                        <span className={`status-text ${
-                                            advisor.studentListStatus === 'Pending' ? 'status-pending' : 'status-sent'
-                                        }`}>
-                                            Student List: {advisor.studentListStatus}
-                                        </span>
-                                        {advisor.studentListStatus === 'Pending' && (
-                                            <button 
-                                                className="send-notification-btn"
-                                                onClick={() => handleSendNotification(advisor.name)}
-                                            >
-                                                Send Notification
-                                            </button>
+                                        <span className={`status-text ${advisor.status === 'PENDING' ? 'status-pending' : 'status-sent'}`}>Student List: {advisor.status}</span>
+                                        {advisor.status === 'PENDING' && (
+                                            <button className="send-notification-btn" onClick={() => handleSendNotification(advisor.advisorId, advisor.name)}>Send Notification</button>
                                         )}
                                     </div>
                                 </div>
@@ -245,12 +179,7 @@ const SecretaryBody = () => {
                                         <div className="notification-content">
                                             <div className="notification-message">{notification.message}</div>
                                         </div>
-                                        <button 
-                                            className="delete-notification-btn"
-                                            onClick={() => handleDeleteNotification(index)}
-                                        >
-                                            Delete
-                                        </button>
+                                        <button className="delete-notification-btn" onClick={() => handleDeleteNotification(index)}>Delete</button>
                                     </div>
                                 ))
                             )}

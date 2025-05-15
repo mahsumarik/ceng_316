@@ -58,8 +58,18 @@ const AdvisorBody = () => {
     };
     //******************************************************************************************************** */
 
-    const handleSendToSecretary = () => {
-        console.log('Sending student list to secretary');
+    const handleSendToSecretary = async () => {
+    try {
+        await AdvisorService.sendApprovedStudentsToSecretary(userId);
+        alert("Success");
+    } catch (error) {
+        console.error("Full error object:", error);
+        if (error.response) {
+            console.log("Status:", error.response.status);
+            console.log("Data:", error.response.data);
+        }
+            alert("Failed to send: " + error.response?.data || error.message);
+    }
     };
 
     const handleDeleteNotification = async (index) => {

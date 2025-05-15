@@ -27,11 +27,14 @@ public class SecurityConfig {
             .and()
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
+                    // Public endpoints
                     .requestMatchers("/api/auth/**").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/students/**").permitAll()
-                    .requestMatchers(HttpMethod.PUT, "/api/students/*/approve").hasAnyRole("ADVISOR", "SECRETARY", "DEAN")
-                    .requestMatchers(HttpMethod.PUT, "/api/students/*/reject").hasAnyRole("ADVISOR", "SECRETARY", "DEAN")
-                    .requestMatchers(HttpMethod.DELETE, "/api/students/**").permitAll()
+                    // Advisor-only endpoints
+                    .requestMatchers("/api/advisors/**").permitAll()
+                    // Secretary-only endpoints
+                    .requestMatchers("/api/secretary/**").permitAll()
+
+                    .requestMatchers("/api/students/**").permitAll()
                     .anyRequest().authenticated()
             )
             .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
