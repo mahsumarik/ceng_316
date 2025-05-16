@@ -92,9 +92,13 @@ const SecretaryBody = () => {
         setSelectedStudent(null);
     };
 
-    const handleSendToDean = () => {
-        // İleride uygulanacak
-        console.log('Sending student list to dean');
+    const handleSendToDean = async () => {
+        try {
+            await SecretaryService.sendApprovedStudentsToDean(userId);
+            alert('Student list successfully sent to Dean!');
+        } catch (error) {
+            alert('Failed to send student list to Dean: ' + (error.response?.data || error.message));
+        }
     };
 
     // Pagination calculations

@@ -35,6 +35,13 @@ const SecretaryService = {
   });
   return response.data;
 },
+
+  sendApprovedStudentsToDean: async (secretaryId) => {
+    const response = await api.post('/secretary/send-approved-students-to-dean', null, {
+      params: { secretaryId }
+    });
+    return response.data;
+  },
 };
 
 export default SecretaryService;

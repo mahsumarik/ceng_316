@@ -10,4 +10,6 @@ public interface IStudentListRepository extends JpaRepository<StudentList, Long>
     List<StudentList> findByAdvisorId(Long advisorId);
     List<StudentList> findBySecretaryId(Long secretaryId);
     List<StudentList> findByAdvisorIdAndSecretaryId(Long id, Long id1);
+    List<StudentList> findByDeanId(Long deanId);
+
 }

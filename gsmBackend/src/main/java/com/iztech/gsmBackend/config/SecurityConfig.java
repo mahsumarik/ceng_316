@@ -27,14 +27,11 @@ public class SecurityConfig {
             .and()
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                    // Public endpoints
                     .requestMatchers("/api/auth/**").permitAll()
-                    // Advisor-only endpoints
                     .requestMatchers("/api/advisors/**").permitAll()
-                    // Secretary-only endpoints
                     .requestMatchers("/api/secretary/**").permitAll()
-
                     .requestMatchers("/api/students/**").permitAll()
+                    .requestMatchers("/api/dean/**").permitAll()
                     .anyRequest().authenticated()
             )
             .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

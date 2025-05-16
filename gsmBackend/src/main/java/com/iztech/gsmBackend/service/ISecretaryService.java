@@ -12,4 +12,8 @@ public interface ISecretaryService {
     List<StudentDto> getApprovedStudentsForSecretary(Long secretaryId);
 
     String getDepartmentBySecretaryId(Long secretaryId);
+
+    void sendApprovedStudentsToDean(Long secretaryId);
+
+    //void sendApprovedStudentsToDean(Long secretaryId);
 }

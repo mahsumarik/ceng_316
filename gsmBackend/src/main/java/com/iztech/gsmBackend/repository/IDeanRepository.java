@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface IDeanRepository extends JpaRepository<Dean,Long> {
     Optional<Dean> findByEmail(String email);
+    Optional<Dean> findByFaculty(String faculty);
 }

@@ -73,6 +73,7 @@ public class AdvisorService implements IAdvisorService {
         }
 
         String department = advisor.getDepartment();
+        String faculty=advisor.getFaculty();
 
         Secretary secretary = secretaryRepository.findAll().stream()
                 .filter(sec -> department.equalsIgnoreCase(sec.getDepartment()))
@@ -100,6 +101,7 @@ public class AdvisorService implements IAdvisorService {
         studentList.setAdvisor(advisor);
         studentList.setSecretary(secretary);
         studentList.setDepartment(department);
+        studentList.setFaculty(faculty);
         studentList.setCreationDate(LocalDateTime.now());
         studentList.setStudents(approvedStudents);
         studentList.setContent(newContent);
@@ -146,7 +148,6 @@ public class AdvisorService implements IAdvisorService {
             throw new RuntimeException("Failed to serialize student list", e);
         }
     }
-
 
 }
 

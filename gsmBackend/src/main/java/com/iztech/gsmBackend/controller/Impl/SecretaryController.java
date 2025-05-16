@@ -45,4 +45,12 @@ public class SecretaryController implements ISecretaryController {
     public ResponseEntity<String> getDepartment(@RequestParam Long secretaryId) {
         return ResponseEntity.ok(secretaryService.getDepartmentBySecretaryId(secretaryId));
     }
+
+    @Override
+    @PostMapping("/send-to-dean")
+    public ResponseEntity<String> sendStudentListToDean(@RequestParam Long secretaryId) {
+        secretaryService.sendApprovedStudentsToDean(secretaryId);
+        return ResponseEntity.ok("Approved students sent to dean.");
+    }
+
 }

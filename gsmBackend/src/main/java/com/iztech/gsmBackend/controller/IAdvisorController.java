@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import java.util.List;
 
 public interface IAdvisorController {
+
     ResponseEntity<List<StudentDto>> getStudentsByAdvisor(Long advisorId);
 
     public ResponseEntity<String> sendStudentListToSecretary(@PathVariable Long advisorId);

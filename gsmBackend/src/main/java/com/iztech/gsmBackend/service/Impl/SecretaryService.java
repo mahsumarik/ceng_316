@@ -4,9 +4,12 @@ import com.iztech.gsmBackend.dto.AdvisorStatusDto;
 import com.iztech.gsmBackend.dto.StudentDto;
 import com.iztech.gsmBackend.enums.STATUS;
 import com.iztech.gsmBackend.model.Advisor;
+import com.iztech.gsmBackend.model.Dean;
 import com.iztech.gsmBackend.model.Secretary;
 import com.iztech.gsmBackend.model.StudentList;
+import com.iztech.gsmBackend.model.Student;
 import com.iztech.gsmBackend.repository.IAdvisorRepository;
+import com.iztech.gsmBackend.repository.IDeanRepository;
 import com.iztech.gsmBackend.repository.ISecretaryRepository;
 import com.iztech.gsmBackend.repository.IStudentListRepository;
 import com.iztech.gsmBackend.repository.ITranscriptRepository;
@@ -17,6 +20,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 @Service
 public class SecretaryService implements ISecretaryService {
@@ -35,6 +44,9 @@ public class SecretaryService implements ISecretaryService {
 
     @Autowired
     private ITranscriptRepository transcriptRepository;
+
+    @Autowired
+    private IDeanRepository deanRepository;
     
     @Override
     public List<AdvisorStatusDto> getAdvisorStatusesByDepartment(String department) {
@@ -54,8 +66,6 @@ public class SecretaryService implements ISecretaryService {
 
     @Override
     public void sendReminderToAdvisor(Long advisorId) {
-        Advisor advisor = advisorRepository.findById(advisorId)
-                .orElseThrow(() -> new RuntimeException("Advisor not found"));
 
         boolean alreadySent = !studentListRepository.findByAdvisorId(advisorId).isEmpty();
         if (alreadySent) {
@@ -102,5 +112,92 @@ public class SecretaryService implements ISecretaryService {
         Secretary secretary = secretaryRepository.findById(secretaryId)
                 .orElseThrow(() -> new RuntimeException("Secretary not found"));
         return secretary.getDepartment();
+    }
+
+    @Override
+    public void sendApprovedStudentsToDean(Long secretaryId) {
+        Secretary secretary = secretaryRepository.findById(secretaryId)
+                .orElseThrow(() -> new RuntimeException("Secretary not found"));
+
+        List<Student> approvedStudents = studentListRepository.findBySecretaryId(secretaryId).stream()
+                .flatMap(list -> list.getStudents().stream())
+                //.filter(s -> s.getSecretaryStatus() == STATUS.APPROVED)
+                .collect(Collectors.toList());
+
+        if (approvedStudents.isEmpty()) {
+            throw new RuntimeException("No approved students to send.");
+        }
+
+        Dean dean = deanRepository.findAll().stream()
+                .filter(d -> secretary.getFaculty().equalsIgnoreCase(d.getFaculty()))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Dean not found for faculty: " + secretary.getFaculty()));
+
+        byte[] newContent = serializeStudentList(approvedStudents);
+
+        List<StudentList> existingLists = studentListRepository.findByAdvisorIdAndSecretaryId(secretaryId, dean.getId());
+
+        for (StudentList list : existingLists) {
+            if (Arrays.equals(list.getContent(), newContent)) {
+                System.out.println("Identical student list already sent to Dean. Skipping save.");
+                return;
+            }
+        }
+
+        if (!existingLists.isEmpty()) {
+            studentListRepository.deleteAll(existingLists);
+        }
+
+        StudentList studentList = new StudentList();
+        studentList.setSecretary(secretary);
+        studentList.setDean(dean);
+        studentList.setDepartment(secretary.getDepartment());
+        studentList.setFaculty(secretary.getFaculty());
+        studentList.setCreationDate(LocalDateTime.now());
+        studentList.setStudents(approvedStudents);
+        studentList.setContent(newContent);
+
+        studentListRepository.save(studentList);
+
+        String message = "Secretary " + secretary.getFirstName() + " " + secretary.getLastName() + " has sent the approved student list to Dean.";
+        notificationService.sendNotification(dean.getId(), message);
+    }
+
+
+    private byte[] serializeStudentList(List<Student> students) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+
+            List<Map<String, Object>> simpleList = students.stream()
+                    .map(s -> {
+                        Map<String, Object> studentMap = new HashMap<>();
+                        studentMap.put("id", s.getId());
+                        studentMap.put("studentNumber", s.getStudentNumber());
+                        studentMap.put("firstName", s.getFirstName());
+                        studentMap.put("lastName", s.getLastName());
+                        studentMap.put("gpa", s.getGpa());
+                        studentMap.put("department", s.getDepartment());
+                        studentMap.put("faculty", s.getFaculty());
+                        studentMap.put("ectsEarned", s.getEctsEarned());
+                        studentMap.put("advisorStatus", s.getAdvisorStatus());
+                        studentMap.put("secretaryStatus", s.getSecretaryStatus());
+                        studentMap.put("deanStatus", s.getDeanStatus());
+                        studentMap.put("studentAffairStatus", s.getStudentAffairStatus());
+                        studentMap.put("enrollmentDate", s.getEnrollmentDate());
+                        studentMap.put("graduationStatus", s.getGraduationStatus());
+                        studentMap.put("email", s.getEmail());
+                        studentMap.put("phone", s.getPhone());
+                        studentMap.put("role", s.getRole());
+                        return studentMap;
+                    })
+                    .sorted((a, b) -> a.get("id").toString().compareTo(b.get("id").toString()))
+                    .toList();
+
+            return mapper.writeValueAsBytes(simpleList);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to serialize student list", e);
+        }
     }
 }

@@ -15,6 +15,8 @@ public class StudentList extends Document {
 
     private String department; // Öğrencilerin ait olduğu bölüm
 
+    private String faculty; // Öğrencilerin ait olduğu fakülte
+
     @ManyToOne
     @JoinColumn(name = "advisor_id")
     private Advisor advisor; // Danışman ile ilişki (Birebir ilişki)
@@ -37,3 +39,4 @@ public class StudentList extends Document {
 
     private LocalDateTime creationDate; // Belgenin oluşturulma tarihi
 }
+

@@ -3,88 +3,57 @@ import './DeanBody.css';
 import ViewDetails from './ViewDetails';
 import { useAuth } from '../../context/AuthContext';
 import NotificationService from '../../services/NotificationService';
+import DeanService from '../../services/DeanService';
 
 const DeanBody = () => {
     const [activeTab, setActiveTab] = useState('Departments');
-    const [searchTerm, setSearchTerm] = useState('');
     const [selectedStudent, setSelectedStudent] = useState(null);
     const [showViewDetails, setShowViewDetails] = useState(false);
     const { userId } = useAuth();
     const [notifications, setNotifications] = useState([]);
+    //const [faculty, setFaculty] = useState('');
+    const [departmentStatuses, setDepartmentStatuses] = useState([]);
+    const [approvedStudents, setApprovedStudents] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const studentsPerPage = 5;
 
-    // Mock data for departments
-    const departments = [
-        {
-            name: 'Computer Engineering',
-            studentListStatus: 'Pending'
-        },
-        {
-            name: 'Bio Engineering',
-            studentListStatus: 'Sent'
-        },
-        {
-            name: 'Environment Engineering',
-            studentListStatus: 'Pending'
-        },
-        {
-            name: 'Electric and Electronic Engineering',
-            studentListStatus: 'Pending'
-        },
-        {
-            name: 'Energy Systems',
-            studentListStatus: 'Sent'
-        }
-    ];
-
-    // Mock data for students (same as secretary page)
-    const students = [
-        {
-            id: '1001',
-            name: 'Alice Johnson',
-            status: 'Approved',
-            gpa: '3.95',
-            ectsEarned: '240'
-        },
-        {
-            id: '1002',
-            name: 'Bob Smith',
-            status: 'Approved',
-            gpa: '3.65',
-            ectsEarned: '240'
-        }
-    ];
-
     useEffect(() => {
+        const fetchDeanData = async () => {
+            try {
+                const facultyData = await DeanService.getFaculty(userId);
+                //setFaculty(facultyData);
+                const deptStatuses = await DeanService.getDepartmentStatusesByFaculty(facultyData);
+                setDepartmentStatuses(deptStatuses);
+                const students = await DeanService.getApprovedStudents(userId);
+                setApprovedStudents(students);
+            } catch (err) {
+                console.error('Dean data fetch error', err);
+            }
+        };
         const loadNotifications = async () => {
             try {
                 const notificationsData = await NotificationService.getNotifications(userId);
                 setNotifications(notificationsData);
             } catch (err) {
-                console.error("Failed to load notifications:", err);
+                console.error('Failed to load notifications:', err);
             }
         };
+        fetchDeanData();
         loadNotifications();
     }, [userId]);
 
-    const handleDeleteNotification = async (index) => {
+    const handleSendNotification = async (secretaryId) => {
         try {
-            await NotificationService.deleteNotification(userId, index);
-            const updatedNotifications = await NotificationService.getNotifications(userId);
-            setNotifications(updatedNotifications);
+            await DeanService.notifySecretary(secretaryId);
+            alert('Notification sent to secretary!');
         } catch (err) {
-            console.error("Failed to delete notification:", err);
+            alert('Notification already sent or failed.');
         }
     };
 
-    const handleSendNotification = (departmentName) => {
-        // This will be implemented later
-        console.log('Sending notification to department:', departmentName);
-    };
-
     const handleViewDetails = (studentId) => {
-        const student = students.find(s => s.id === studentId);
+        const student = approvedStudents.find(s => s.id === studentId);
         setSelectedStudent(student);
         setShowViewDetails(true);
     };
@@ -94,14 +63,14 @@ const DeanBody = () => {
         setSelectedStudent(null);
     };
 
-    // Pagination calculations for students
-    const filteredStudents = students.filter(student =>
-        student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        student.id.includes(searchTerm)
+    // Search and pagination for students
+    const filteredStudents = approvedStudents.filter(student =>
+        (student.firstName + ' ' + student.lastName).toLowerCase().includes(searchTerm.toLowerCase()) ||
+        student.studentNumber?.toString().includes(searchTerm)
     );
     const indexOfLastStudent = currentPage * studentsPerPage;
     const indexOfFirstStudent = indexOfLastStudent - studentsPerPage;
-    const currentStudents = filteredStudents.slice(indexOfFirstStudent, indexOfLastStudent);
+    const paginatedStudents = filteredStudents.slice(indexOfFirstStudent, indexOfLastStudent);
     const totalPages = Math.ceil(filteredStudents.length / studentsPerPage);
 
     const handleNextPage = () => {
@@ -160,22 +129,15 @@ const DeanBody = () => {
                             <h2>Departments</h2>
                         </div>
                         <div>
-                            {departments.map((department, index) => (
+                            {departmentStatuses.map((dept, index) => (
                                 <div key={index} className="department-card">
                                     <div className="department-info">
-                                        <div className="department-name">{department.name}</div>
+                                        <div className="secretary-name">Department: {dept.name}</div>
                                     </div>
                                     <div className="status-container">
-                                        <div className={`status-text ${
-                                            department.studentListStatus === 'Pending' ? 'status-pending' : 'status-sent'
-                                        }`}>
-                                            Student List: {department.studentListStatus}
-                                        </div>
-                                        {department.studentListStatus === 'Pending' && (
-                                            <button 
-                                                className="send-notification-btn"
-                                                onClick={() => handleSendNotification(department.name)}
-                                            >
+                                        <span className={`status-text ${dept.status === 'PENDING' ? 'status-pending' : 'status-sent'}`}>Student List: {dept.status}</span>
+                                        {dept.status === 'PENDING' && (
+                                            <button className="send-notification-btn" onClick={() => handleSendNotification(dept.secretaryId)}>
                                                 Send Notification
                                             </button>
                                         )}
@@ -186,66 +148,47 @@ const DeanBody = () => {
                     </>
                 ) : activeTab === 'Your Students' ? (
                     <>
-                        <div className="section-header">
-                            <h2>Your Students</h2>
+                        <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <h2>Approved Students</h2>
+                            <button
+                                className="send-to-secretary-btn"
+                                style={{ backgroundColor: '#28a745', color: 'white', padding: '10px 20px', border: 'none', borderRadius: '4px', fontWeight: 'bold', fontSize: '16px', cursor: 'pointer' }}
+                                disabled
+                            >
+                                Send Student List to Student Affair
+                            </button>
                         </div>
-                        <div className="search-section">
-                            <label className="search-label">Search Student:</label>
-                            <input
-                                type="text"
-                                className="search-input"
-                                placeholder="Enter Student Name or ID"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
-                        </div>
+                        <input
+                            type="text"
+                            className="search-input"
+                            placeholder="Enter Student Name or ID"
+                            value={searchTerm}
+                            onChange={e => setSearchTerm(e.target.value)}
+                            style={{ marginBottom: '1rem', width: '600px', maxWidth: '100%' }}
+                        />
                         <div>
-                            {currentStudents && currentStudents.length > 0 ? (
-                                currentStudents.map(student => (
-                                    <div key={student.id} className="student-card">
-                                        <div className="student-info">
-                                            <div className="student-name">Student Name: {student.name}</div>
-                                            <div className="student-details">Student ID: {student.id}</div>
-                                            <div className="student-details">GPA: {student.gpa}</div>
-                                            <div className="student-details">ECTS: {student.ectsEarned}</div>
+                            {paginatedStudents.length > 0 ? (
+                                <>
+                                    {paginatedStudents.map(student => (
+                                        <div key={student.id} className="student-card">
+                                            <div className="student-info">
+                                                <div className="student-name">Student Name: {student.firstName} {student.lastName}</div>
+                                                <div className="student-details">Student ID: {student.studentNumber}</div>
+                                                <div className="student-details">GPA: {student.gpa}</div>
+                                                <div className="student-details">Department: {student.department}</div>
+                                                <div className="student-details">Faculty: {student.faculty}</div>
+                                            </div>
+                                            <button className="view-details-btn" onClick={() => handleViewDetails(student.id)}>View Details</button>
                                         </div>
-                                        <button className="view-details-btn" onClick={() => handleViewDetails(student.id)}>View Details</button>
+                                    ))}
+                                    <div className="pagination-controls">
+                                        <button onClick={handlePrevPage} disabled={currentPage === 1}>←</button>
+                                        <span>{currentPage} / {totalPages}</span>
+                                        <button onClick={handleNextPage} disabled={currentPage === totalPages}>→</button>
                                     </div>
-                                ))
+                                </>
                             ) : (
-                                <div className="no-students">No students found.</div>
-                            )}
-                            {filteredStudents.length > studentsPerPage && (
-                                <div className="pagination-controls">
-                                    <button onClick={handlePrevPage} disabled={currentPage === 1}>←</button>
-                                    <div className="page-numbers">
-                                        {[...Array(totalPages)].map((_, index) => {
-                                            const pageNumber = index + 1;
-                                            if (
-                                                pageNumber === 1 ||
-                                                pageNumber === totalPages ||
-                                                (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)
-                                            ) {
-                                                return (
-                                                    <button
-                                                        key={pageNumber}
-                                                        className={currentPage === pageNumber ? 'active' : ''}
-                                                        onClick={() => setCurrentPage(pageNumber)}
-                                                    >
-                                                        {pageNumber}
-                                                    </button>
-                                                );
-                                            } else if (
-                                                (pageNumber === currentPage - 2 && currentPage > 3) ||
-                                                (pageNumber === currentPage + 2 && currentPage < totalPages - 2)
-                                            ) {
-                                                return <span key={pageNumber}>...</span>;
-                                            }
-                                            return null;
-                                        })}
-                                    </div>
-                                    <button onClick={handleNextPage} disabled={currentPage === totalPages}>→</button>
-                                </div>
+                                <div className="no-students">No approved students found.</div>
                             )}
                         </div>
                     </>
@@ -263,7 +206,10 @@ const DeanBody = () => {
                                         </div>
                                         <button
                                             className="delete-notification-btn"
-                                            onClick={() => handleDeleteNotification(index)}
+                                            onClick={() => {
+                                                NotificationService.deleteNotification(userId, index);
+                                                setNotifications(notifications.filter((_, i) => i !== index));
+                                            }}
                                         >
                                             Delete
                                         </button>
