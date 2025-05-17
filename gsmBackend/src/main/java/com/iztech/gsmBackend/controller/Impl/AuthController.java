@@ -3,6 +3,7 @@ package com.iztech.gsmBackend.controller.Impl;
 import com.iztech.gsmBackend.controller.IAuthController;
 import com.iztech.gsmBackend.dto.*;
 import com.iztech.gsmBackend.service.IAuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ public class AuthController implements IAuthController {
 
     @PostMapping("/register")
     @Override
-    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
         return ResponseEntity.ok(authService.register(request));
     }
 

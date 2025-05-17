@@ -77,7 +77,12 @@ const DeanBody = () => {
             alert('Student list successfully sent to Student Affairs!');
             // Optionally reload students or statuses here
         } catch (error) {
-            alert('Failed to send student list to Student Affairs: ' + (error.response?.data || error.message));
+            const msg = error.response?.data || error.message;
+            if (msg && msg.includes('You cannot send the student list')) {
+                alert('You cannot send the student list to Student Affairs until all secretaries in your faculty have sent their student lists.');
+            } else {
+                alert('Failed to send student list to Student Affairs: ' + msg);
+            }
         }
     };
 

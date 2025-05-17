@@ -63,6 +63,7 @@ const SecretaryBody = () => {
     const handleSendNotification = async (advisorId) => {
         try {
             await SecretaryService.notifyAdvisor(advisorId);
+            alert('Notification sent to advisor!');
         } catch (err) {
             alert("Notification already sent or failed.");
         }
@@ -85,7 +86,12 @@ const SecretaryBody = () => {
             await SecretaryService.sendApprovedStudentsToDean(userId);
             alert('Student list successfully sent to Dean!');
         } catch (error) {
-            alert('Failed to send student list to Dean: ' + (error.response?.data || error.message));
+            const msg = error.response?.data || error.message;
+            if (msg && msg.includes('All advisors must send their student list')) {
+                alert('You cannot send the student list to the Dean until all advisors in your department have sent their student lists.');
+            } else {
+                alert('Failed to send student list to Dean: ' + msg);
+            }
         }
     };
 
