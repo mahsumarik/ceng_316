@@ -45,4 +45,10 @@ public class DeanController implements IDeanController {
     public ResponseEntity<String> getFaculty(@RequestParam Long deanId) {
         return ResponseEntity.ok(deanService.getFacultyByDeanId(deanId));
     }
+
+    @PostMapping("/send-to-student-affair")
+    public ResponseEntity<String> sendStudentListToStudentAffair(@RequestParam Long deanId) {
+        deanService.sendApprovedStudentsToStudentAffair(deanId);
+        return ResponseEntity.ok("Approved students sent to student affair.");
+    }
 }

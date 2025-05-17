@@ -71,6 +71,16 @@ const DeanBody = () => {
         }
     };
 
+    const handleSendToStudentAffair = async () => {
+        try {
+            await DeanService.sendApprovedStudentsToStudentAffair(userId);
+            alert('Student list successfully sent to Student Affairs!');
+            // Optionally reload students or statuses here
+        } catch (error) {
+            alert('Failed to send student list to Student Affairs: ' + (error.response?.data || error.message));
+        }
+    };
+
     const filteredStudents = approvedStudents.filter(student =>
         (student.firstName + ' ' + student.lastName).toLowerCase().includes(searchTerm.toLowerCase()) ||
         student.studentNumber?.toString().includes(searchTerm)
@@ -147,20 +157,22 @@ const DeanBody = () => {
                             <h2>Approved Students</h2>
                             <button
                                 className="send-to-secretary-btn"
-                                style={{ backgroundColor: '#28a745', color: 'white', padding: '10px 20px', border: 'none', borderRadius: '4px', fontWeight: 'bold', fontSize: '16px', cursor: 'pointer' }}
-                                disabled
+                                style={{ backgroundColor: '#28a745', color: 'white', padding: '10px 20px', border: 'none', borderRadius: '4px', fontWeight: 'bold', fontSize: '16px', cursor: 'pointer', marginLeft: 'auto' }}
+                                onClick={handleSendToStudentAffair}
                             >
-                                Send Student List to Student Affair
+                                Send Student List to Student Affairs
                             </button>
                         </div>
-                        <input
-                            type="text"
-                            className="search-input"
-                            placeholder="Enter Student Name or ID"
-                            value={searchTerm}
-                            onChange={e => setSearchTerm(e.target.value)}
-                            style={{ marginBottom: '1rem', width: '600px', maxWidth: '100%' }}
-                        />
+                        <div className="search-section" style={{ marginBottom: '1rem' }}>
+                            <input
+                                type="text"
+                                className="search-input"
+                                placeholder="Enter Student Name or ID"
+                                value={searchTerm}
+                                onChange={e => setSearchTerm(e.target.value)}
+                                style={{ width: '100%', maxWidth: '100%', padding: '10px', fontSize: '16px', borderRadius: '4px', border: '1px solid #ccc' }}
+                            />
+                        </div>
                         <div>
                             <Pagination
                                 filteredItems={filteredStudents}

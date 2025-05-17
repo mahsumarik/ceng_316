@@ -10,4 +10,5 @@ public interface IDeanService {
     void sendReminderToSecretary(Long secretaryId);
     List<StudentDto> getApprovedStudentsForDean(Long deanId);
     String getFacultyByDeanId(Long deanId);
+    void sendApprovedStudentsToStudentAffair(Long deanId);
 }

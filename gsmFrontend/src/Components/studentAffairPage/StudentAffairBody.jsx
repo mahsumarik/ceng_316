@@ -4,6 +4,7 @@ import ViewDetails from './ViewDetails';
 import { useAuth } from '../../context/AuthContext';
 import NotificationService from '../../services/NotificationService';
 import Pagination from '../Pagination/Pagination';
+import StudentAffairService from '../../services/StudentAffairService';
 
 const StudentAffairBody = () => {
     const [activeTab, setActiveTab] = useState('Student List');
@@ -12,46 +13,26 @@ const StudentAffairBody = () => {
     const [showViewDetails, setShowViewDetails] = useState(false);
     const { userId } = useAuth();
     const [notifications, setNotifications] = useState([]);
-
-    // Mock data for students
-    const students = [
-        {
-            id: '1001',
-            name: 'Alice Johnson',
-            status: 'Approved',
-            gpa: '3.95',
-            ectsEarned: '240'
-        },
-        {
-            id: '1002',
-            name: 'Bob Smith',
-            status: 'Approved',
-            gpa: '3.15',
-            ectsEarned: '240'
-        }
-    ];
-
-    // Mock data for faculties
-    const faculties = [
-        {
-            name: 'Engineering Faculty',
-            studentListStatus: 'Pending'
-        },
-        {
-            name: 'Science Faculty',
-            studentListStatus: 'Sent'
-        },
-        {
-            name: 'Architecture Faculty',
-            studentListStatus: 'Pending'
-        },
-        {
-            name: 'Management Faculty',
-            studentListStatus: 'Sent'
-        }
-    ];
+    const [faculties, setFaculties] = useState([]);
+    const [students, setStudents] = useState([]);
 
     useEffect(() => {
+        const fetchFaculties = async () => {
+            try {
+                const data = await StudentAffairService.getFacultyStatuses();
+                setFaculties(data);
+            } catch (err) {
+                console.error('Failed to fetch faculties:', err);
+            }
+        };
+        const fetchStudents = async () => {
+            try {
+                const data = await StudentAffairService.getApprovedStudents(userId);
+                setStudents(data);
+            } catch (err) {
+                console.error('Failed to fetch students:', err);
+            }
+        };
         const loadNotifications = async () => {
             try {
                 const notificationsData = await NotificationService.getNotifications(userId);
@@ -60,6 +41,8 @@ const StudentAffairBody = () => {
                 console.error("Failed to load notifications:", err);
             }
         };
+        fetchFaculties();
+        fetchStudents();
         loadNotifications();
     }, [userId]);
 
@@ -73,9 +56,13 @@ const StudentAffairBody = () => {
         }
     };
 
-    const handleSendNotification = (facultyName) => {
-        // This will be implemented later
-        console.log('Sending notification to faculty:', facultyName);
+    const handleSendNotification = async (faculty) => {
+        try {
+            await StudentAffairService.notifyDean(faculty.facultyId);
+            alert('Notification sent to dean!');
+        } catch (err) {
+            alert('Notification already sent or failed.');
+        }
     };
 
     const handleViewDetails = (studentId) => {
@@ -96,8 +83,8 @@ const StudentAffairBody = () => {
 
     // Filter students based on search term
     const filteredStudents = students.filter(student =>
-        student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        student.id.includes(searchTerm)
+        (`${student.firstName} ${student.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        student.studentNumber?.toString().includes(searchTerm))
     );
 
     if (showViewDetails && selectedStudent) {
@@ -154,15 +141,11 @@ const StudentAffairBody = () => {
                                         <div className="faculty-name">Name: {faculty.name}</div>
                                     </div>
                                     <div className="student-list-status">
-                                        <span className={`status-text ${
-                                            faculty.studentListStatus === 'Pending' ? 'status-pending' : 'status-sent'
-                                        }`}>
-                                            Student List: {faculty.studentListStatus}
-                                        </span>
-                                        {faculty.studentListStatus === 'Pending' && (
+                                        <span className={`status-text ${faculty.status === 'PENDING' ? 'status-pending' : 'status-sent'}`}>Student List: {faculty.status}</span>
+                                        {faculty.status === 'PENDING' && (
                                             <button 
                                                 className="send-notification-btn"
-                                                onClick={() => handleSendNotification(faculty.name)}
+                                                onClick={() => handleSendNotification(faculty)}
                                             >
                                                 Send Notification
                                             </button>
@@ -203,10 +186,11 @@ const StudentAffairBody = () => {
                                         currentStudents.map(student => (
                                             <div key={student.id} className="student-card">
                                                 <div className="student-info">
-                                                    <div className="student-name">Student Name: {student.name}</div>
-                                                    <div className="student-details">Student ID: {student.id}</div>
+                                                    <div className="student-name">Student Name: {student.firstName} {student.lastName}</div>
+                                                    <div className="student-details">Student ID: {student.studentNumber}</div>
                                                     <div className="student-details">GPA: {student.gpa}</div>
-                                                    <div className="student-details">ECTS: {student.ectsEarned}</div>
+                                                    <div className="student-details">Department: {student.department}</div>
+                                                    <div className="student-details">Faculty: {student.faculty}</div>
                                                 </div>
                                                 <button className="view-details-btn" onClick={() => handleViewDetails(student.id)}>View Details</button>
                                             </div>

@@ -20,6 +20,11 @@ const DeanService = {
     const response = await api.get('/dean/approved-students', { params: { deanId } });
     return response.data;
   },
+
+  sendApprovedStudentsToStudentAffair: async (deanId) => {
+    const response = await api.post('/dean/send-to-student-affair', null, { params: { deanId } });
+    return response.data;
+  },
 };
 
 export default DeanService;
