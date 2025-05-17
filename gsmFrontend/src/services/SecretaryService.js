@@ -37,7 +37,7 @@ const SecretaryService = {
 },
 
   sendApprovedStudentsToDean: async (secretaryId) => {
-    const response = await api.post('/secretary/send-approved-students-to-dean', null, {
+    const response = await api.post('/secretary/send-to-dean', null, {
       params: { secretaryId }
     });
     return response.data;

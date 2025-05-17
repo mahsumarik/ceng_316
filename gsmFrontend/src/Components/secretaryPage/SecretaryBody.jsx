@@ -3,7 +3,8 @@ import './SecretaryBody.css';
 import ViewDetails from './ViewDetails';
 import { useAuth } from '../../context/AuthContext';
 import NotificationService from '../../services/NotificationService';
-import SecretaryService from '../../services/SecretaryService'; // Yeni eklendi
+import SecretaryService from '../../services/SecretaryService';
+import Pagination from '../Pagination/Pagination';
 
 const SecretaryBody = () => {
     const [activeTab, setActiveTab] = useState('Student List');
@@ -13,23 +14,12 @@ const SecretaryBody = () => {
     const { userId } = useAuth();
     const [notifications, setNotifications] = useState([]);
     const [advisorStatuses, setAdvisorStatuses] = useState([]);
-    const [students, setStudents] = useState([]); // Backend'den gelecek onaylanmışlar
-    const [currentPage, setCurrentPage] = useState(1);
-    const studentsPerPage = 5;
+    const [students, setStudents] = useState([]);
 
     useEffect(() => {
-        const loadNotifications = async () => {
-            try {
-                const notificationsData = await NotificationService.getNotifications(userId);
-                setNotifications(notificationsData);
-            } catch (err) {
-                console.error("Failed to load notifications:", err);
-            }
-        };
-
         const fetchAdvisorStatuses = async () => {
             try {
-                const department = await SecretaryService.getDepartment(userId); // Sekreterin departmanı
+                const department = await SecretaryService.getDepartment(userId);
                 console.log(department)
                 const statusData = await SecretaryService.getAdvisorStatuses(department);
                 setAdvisorStatuses(statusData);
@@ -56,26 +46,23 @@ const SecretaryBody = () => {
             }
         }
 
-        loadNotifications();
+        const loadNotifications = async () => {
+            try {
+                const notificationsData = await NotificationService.getNotifications(userId);
+                setNotifications(notificationsData);
+            } catch (err) {
+                console.error("Failed to load notifications:", err);
+            }
+        };
+
         fetchAdvisorStatuses();
         fetchApprovedStudents();
+        loadNotifications();
     }, [userId]);
 
-    const handleDeleteNotification = async (index) => {
-        try {
-            await NotificationService.deleteNotification(userId, index);
-            const updated = await NotificationService.getNotifications(userId);
-            setNotifications(updated);
-        } catch (err) {
-            console.error("Failed to delete notification:", err);
-        }
-    };
-
-    const handleSendNotification = async (advisorId, advisorName) => {
+    const handleSendNotification = async (advisorId) => {
         try {
             await SecretaryService.notifyAdvisor(advisorId);
-            // Status'u değiştirme! Sadece bildirim gönder.
-            // İstersen kullanıcıya "Notification sent" mesajı gösterebilirsin.
         } catch (err) {
             alert("Notification already sent or failed.");
         }
@@ -94,6 +81,7 @@ const SecretaryBody = () => {
 
     const handleSendToDean = async () => {
         try {
+            console.log("Sending approved students to Dean, secretaryId:", userId);
             await SecretaryService.sendApprovedStudentsToDean(userId);
             alert('Student list successfully sent to Dean!');
         } catch (error) {
@@ -101,23 +89,20 @@ const SecretaryBody = () => {
         }
     };
 
-    // Pagination calculations
-    const indexOfLastStudent = currentPage * studentsPerPage;
-    const indexOfFirstStudent = indexOfLastStudent - studentsPerPage;
+    const handleDeleteNotification = async (index) => {
+        try {
+            await NotificationService.deleteNotification(userId, index);
+            const updatedNotifications = await NotificationService.getNotifications(userId);
+            setNotifications(updatedNotifications);
+        } catch (err) {
+            console.error("Failed to delete notification:", err);
+        }
+    };
+
     const filteredStudents = students.filter(student =>
         (`${student.firstName} ${student.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
         student.id.toString().includes(searchTerm))
     );
-    const currentStudents = filteredStudents.slice(indexOfFirstStudent, indexOfLastStudent);
-    const totalPages = Math.ceil(filteredStudents.length / studentsPerPage);
-
-    const handleNextPage = () => {
-        if (currentPage < totalPages) setCurrentPage(prev => prev + 1);
-    };
-
-    const handlePrevPage = () => {
-        if (currentPage > 1) setCurrentPage(prev => prev - 1);
-    };
 
     if (showViewDetails && selectedStudent) {
         return (
@@ -170,53 +155,27 @@ const SecretaryBody = () => {
                             <input type="text" className="search-input" placeholder="Enter Student Name or ID" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
                         </div>
                         <div>
-                            {currentStudents && currentStudents.length > 0 ? (
-                                currentStudents
-                                    .map(student => (
-                                        <div key={student.id} className="student-card">
-                                            <div className="student-info">
-                                                <div className="student-name">Student Name: {student.firstName} {student.lastName}</div>
-                                                <div className="student-details">Student ID: {student.studentNumber}</div>
-                                                <div className="student-details">GPA: {student.gpa}</div>
+                            <Pagination
+                                filteredItems={filteredStudents}
+                                itemsPerPage={5}
+                            >
+                                {(currentStudents) => (
+                                    currentStudents && currentStudents.length > 0 ? (
+                                        currentStudents.map(student => (
+                                            <div key={student.id} className="student-card">
+                                                <div className="student-info">
+                                                    <div className="student-name">Student Name: {student.firstName} {student.lastName}</div>
+                                                    <div className="student-details">Student ID: {student.studentNumber}</div>
+                                                    <div className="student-details">GPA: {student.gpa}</div>
+                                                </div>
+                                                <button className="view-details-btn" onClick={() => handleViewDetails(student.id)}>View Details</button>
                                             </div>
-                                            <button className="view-details-btn" onClick={() => handleViewDetails(student.id)}>View Details</button>
-                                        </div>
-                                    ))
-                            ) : (
-                                <div className="no-students">No students found.</div>
-                            )}
-                            {filteredStudents.length > studentsPerPage && (
-                                <div className="pagination-controls">
-                                    <button onClick={handlePrevPage} disabled={currentPage === 1}>←</button>
-                                    <div className="page-numbers">
-                                        {[...Array(totalPages)].map((_, index) => {
-                                            const pageNumber = index + 1;
-                                            if (
-                                                pageNumber === 1 ||
-                                                pageNumber === totalPages ||
-                                                (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)
-                                            ) {
-                                                return (
-                                                    <button
-                                                        key={pageNumber}
-                                                        className={currentPage === pageNumber ? 'active' : ''}
-                                                        onClick={() => setCurrentPage(pageNumber)}
-                                                    >
-                                                        {pageNumber}
-                                                    </button>
-                                                );
-                                            } else if (
-                                                (pageNumber === currentPage - 2 && currentPage > 3) ||
-                                                (pageNumber === currentPage + 2 && currentPage < totalPages - 2)
-                                            ) {
-                                                return <span key={pageNumber}>...</span>;
-                                            }
-                                            return null;
-                                        })}
-                                    </div>
-                                    <button onClick={handleNextPage} disabled={currentPage === totalPages}>→</button>
-                                </div>
-                            )}
+                                        ))
+                                    ) : (
+                                        <div className="no-students">No students found.</div>
+                                    )
+                                )}
+                            </Pagination>
                         </div>
                     </>
                 ) : activeTab === 'Advisors' ? (

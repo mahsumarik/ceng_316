@@ -42,7 +42,7 @@ public class DeanService implements IDeanService {
                 .toList();
 
         return secretaries.stream().map(secretary -> {
-            boolean hasSent = !studentListRepository.findBySecretaryId(secretary.getId()).isEmpty();
+            boolean hasSent = !studentListRepository.findBySecretaryIdAndDeanIdIsNotNull(secretary.getId()).isEmpty();
             DepartmentStatusDto dto = new DepartmentStatusDto();
             dto.setSecretaryId(secretary.getId());
             dto.setName(secretary.getDepartment());
@@ -53,12 +53,12 @@ public class DeanService implements IDeanService {
 
     @Override
     public void sendReminderToSecretary(Long secretaryId) {
-        boolean alreadySent = !studentListRepository.findBySecretaryId(secretaryId).isEmpty();
+        boolean alreadySent = !studentListRepository.findBySecretaryIdAndDeanIdIsNotNull(secretaryId).isEmpty();
         if (alreadySent) {
             throw new IllegalStateException("Student list already sent by secretary.");
         }
 
-        String message = "Please send your approved student list to the dean.";
+        String message = "Please send your approved student list to the dean's office.";
         notificationService.sendNotification(secretaryId, message);
     }
 

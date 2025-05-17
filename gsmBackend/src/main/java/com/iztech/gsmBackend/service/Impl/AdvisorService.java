@@ -73,7 +73,7 @@ public class AdvisorService implements IAdvisorService {
         }
 
         String department = advisor.getDepartment();
-        String faculty=advisor.getFaculty();
+        String faculty = advisor.getFaculty();
 
         Secretary secretary = secretaryRepository.findAll().stream()
                 .filter(sec -> department.equalsIgnoreCase(sec.getDepartment()))
@@ -84,15 +84,15 @@ public class AdvisorService implements IAdvisorService {
 
         List<StudentList> existingLists = studentListRepository.findByAdvisorIdAndSecretaryId(advisor.getId(), secretary.getId());
 
+        boolean isUpdate = !existingLists.isEmpty();
+
         for (StudentList list : existingLists) {
             if (Arrays.equals(list.getContent(), newContent)) {
-                // Aynı içerik varsa, hata vermek yerine başarılı yanıt dön
                 System.out.println("Identical student list already sent. Skipping save.");
                 return;
             }
         }
 
-        // Eğer farklıysa: eskileri sil
         if (!existingLists.isEmpty()) {
             studentListRepository.deleteAll(existingLists);
         }
@@ -108,7 +108,12 @@ public class AdvisorService implements IAdvisorService {
 
         studentListRepository.save(studentList);
 
-        String message = "Advisor " + advisor.getFirstName() + " " + advisor.getLastName() + " has sent the approved student list.";
+        String message;
+        if (isUpdate) {
+            message = "Advisor " + advisor.getFirstName() + " " + advisor.getLastName() + " has sent an updated student list.";
+        } else {
+            message = "Advisor " + advisor.getFirstName() + " " + advisor.getLastName() + " has sent the approved student list.";
+        }
         notificationService.sendNotification(secretary.getId(), message);
     }
 

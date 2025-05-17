@@ -4,6 +4,7 @@ import ViewDetails from './ViewDetails';
 import { useAuth } from '../../context/AuthContext';
 import NotificationService from '../../services/NotificationService';
 import DeanService from '../../services/DeanService';
+import Pagination from '../Pagination/Pagination';
 
 const DeanBody = () => {
     const [activeTab, setActiveTab] = useState('Departments');
@@ -11,21 +12,18 @@ const DeanBody = () => {
     const [showViewDetails, setShowViewDetails] = useState(false);
     const { userId } = useAuth();
     const [notifications, setNotifications] = useState([]);
-    //const [faculty, setFaculty] = useState('');
     const [departmentStatuses, setDepartmentStatuses] = useState([]);
     const [approvedStudents, setApprovedStudents] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
-    const [currentPage, setCurrentPage] = useState(1);
-    const studentsPerPage = 5;
 
     useEffect(() => {
         const fetchDeanData = async () => {
             try {
                 const facultyData = await DeanService.getFaculty(userId);
-                //setFaculty(facultyData);
                 const deptStatuses = await DeanService.getDepartmentStatusesByFaculty(facultyData);
                 setDepartmentStatuses(deptStatuses);
                 const students = await DeanService.getApprovedStudents(userId);
+                console.log(students)
                 setApprovedStudents(students);
             } catch (err) {
                 console.error('Dean data fetch error', err);
@@ -63,23 +61,20 @@ const DeanBody = () => {
         setSelectedStudent(null);
     };
 
-    // Search and pagination for students
+    const handleDeleteNotification = async (index) => {
+        try {
+            await NotificationService.deleteNotification(userId, index);
+            const updatedNotifications = await NotificationService.getNotifications(userId);
+            setNotifications(updatedNotifications);
+        } catch (err) {
+            console.error('Failed to delete notification:', err);
+        }
+    };
+
     const filteredStudents = approvedStudents.filter(student =>
         (student.firstName + ' ' + student.lastName).toLowerCase().includes(searchTerm.toLowerCase()) ||
         student.studentNumber?.toString().includes(searchTerm)
     );
-    const indexOfLastStudent = currentPage * studentsPerPage;
-    const indexOfFirstStudent = indexOfLastStudent - studentsPerPage;
-    const paginatedStudents = filteredStudents.slice(indexOfFirstStudent, indexOfLastStudent);
-    const totalPages = Math.ceil(filteredStudents.length / studentsPerPage);
-
-    const handleNextPage = () => {
-        if (currentPage < totalPages) setCurrentPage(prev => prev + 1);
-    };
-
-    const handlePrevPage = () => {
-        if (currentPage > 1) setCurrentPage(prev => prev - 1);
-    };
 
     if (showViewDetails && selectedStudent) {
         return (
@@ -167,29 +162,31 @@ const DeanBody = () => {
                             style={{ marginBottom: '1rem', width: '600px', maxWidth: '100%' }}
                         />
                         <div>
-                            {paginatedStudents.length > 0 ? (
-                                <>
-                                    {paginatedStudents.map(student => (
-                                        <div key={student.id} className="student-card">
-                                            <div className="student-info">
-                                                <div className="student-name">Student Name: {student.firstName} {student.lastName}</div>
-                                                <div className="student-details">Student ID: {student.studentNumber}</div>
-                                                <div className="student-details">GPA: {student.gpa}</div>
-                                                <div className="student-details">Department: {student.department}</div>
-                                                <div className="student-details">Faculty: {student.faculty}</div>
-                                            </div>
-                                            <button className="view-details-btn" onClick={() => handleViewDetails(student.id)}>View Details</button>
-                                        </div>
-                                    ))}
-                                    <div className="pagination-controls">
-                                        <button onClick={handlePrevPage} disabled={currentPage === 1}>←</button>
-                                        <span>{currentPage} / {totalPages}</span>
-                                        <button onClick={handleNextPage} disabled={currentPage === totalPages}>→</button>
-                                    </div>
-                                </>
-                            ) : (
-                                <div className="no-students">No approved students found.</div>
-                            )}
+                            <Pagination
+                                filteredItems={filteredStudents}
+                                itemsPerPage={5}
+                            >
+                                {(paginatedStudents) => (
+                                    paginatedStudents.length > 0 ? (
+                                        <>
+                                            {paginatedStudents.map(student => (
+                                                <div key={student.id} className="student-card">
+                                                    <div className="student-info">
+                                                        <div className="student-name">Student Name: {student.firstName} {student.lastName}</div>
+                                                        <div className="student-details">Student ID: {student.studentNumber}</div>
+                                                        <div className="student-details">GPA: {student.gpa}</div>
+                                                        <div className="student-details">Department: {student.department}</div>
+                                                        <div className="student-details">Faculty: {student.faculty}</div>
+                                                    </div>
+                                                    <button className="view-details-btn" onClick={() => handleViewDetails(student.id)}>View Details</button>
+                                                </div>
+                                            ))}
+                                        </>
+                                    ) : (
+                                        <div className="no-students">No approved students found.</div>
+                                    )
+                                )}
+                            </Pagination>
                         </div>
                     </>
                 ) : (
@@ -206,10 +203,7 @@ const DeanBody = () => {
                                         </div>
                                         <button
                                             className="delete-notification-btn"
-                                            onClick={() => {
-                                                NotificationService.deleteNotification(userId, index);
-                                                setNotifications(notifications.filter((_, i) => i !== index));
-                                            }}
+                                            onClick={() => handleDeleteNotification(index)}
                                         >
                                             Delete
                                         </button>

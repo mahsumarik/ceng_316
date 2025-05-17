@@ -3,6 +3,7 @@ import './StudentAffairBody.css';
 import ViewDetails from './ViewDetails';
 import { useAuth } from '../../context/AuthContext';
 import NotificationService from '../../services/NotificationService';
+import Pagination from '../Pagination/Pagination';
 
 const StudentAffairBody = () => {
     const [activeTab, setActiveTab] = useState('Student List');
@@ -11,8 +12,6 @@ const StudentAffairBody = () => {
     const [showViewDetails, setShowViewDetails] = useState(false);
     const { userId } = useAuth();
     const [notifications, setNotifications] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const studentsPerPage = 5;
 
     // Mock data for students
     const students = [
@@ -90,33 +89,16 @@ const StudentAffairBody = () => {
         setSelectedStudent(null);
     };
 
-    // const handleDownloadDiploma = (studentId) => {
-    //     // This will be implemented later
-    //     console.log('Download diploma for student:', studentId);
-    // };
-
     const handleDownloadAllDiplomas = () => {
         // This will be implemented later
         console.log('Downloading all diplomas');
     };
 
-    // Pagination calculations for students
+    // Filter students based on search term
     const filteredStudents = students.filter(student =>
         student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         student.id.includes(searchTerm)
     );
-    const indexOfLastStudent = currentPage * studentsPerPage;
-    const indexOfFirstStudent = indexOfLastStudent - studentsPerPage;
-    const currentStudents = filteredStudents.slice(indexOfFirstStudent, indexOfLastStudent);
-    const totalPages = Math.ceil(filteredStudents.length / studentsPerPage);
-
-    const handleNextPage = () => {
-        if (currentPage < totalPages) setCurrentPage(prev => prev + 1);
-    };
-
-    const handlePrevPage = () => {
-        if (currentPage > 1) setCurrentPage(prev => prev - 1);
-    };
 
     if (showViewDetails && selectedStudent) {
         return (
@@ -212,53 +194,28 @@ const StudentAffairBody = () => {
                             />
                         </div>
                         <div>
-                            {currentStudents && currentStudents.length > 0 ? (
-                                currentStudents.map(student => (
-                                    <div key={student.id} className="student-card">
-                                        <div className="student-info">
-                                            <div className="student-name">Student Name: {student.name}</div>
-                                            <div className="student-details">Student ID: {student.id}</div>
-                                            <div className="student-details">GPA: {student.gpa}</div>
-                                            <div className="student-details">ECTS: {student.ectsEarned}</div>
-                                        </div>
-                                        <button className="view-details-btn" onClick={() => handleViewDetails(student.id)}>View Details</button>
-                                    </div>
-                                ))
-                            ) : (
-                                <div className="no-students">No students found.</div>
-                            )}
-                            {filteredStudents.length > studentsPerPage && (
-                                <div className="pagination-controls">
-                                    <button onClick={handlePrevPage} disabled={currentPage === 1}>←</button>
-                                    <div className="page-numbers">
-                                        {[...Array(totalPages)].map((_, index) => {
-                                            const pageNumber = index + 1;
-                                            if (
-                                                pageNumber === 1 ||
-                                                pageNumber === totalPages ||
-                                                (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)
-                                            ) {
-                                                return (
-                                                    <button
-                                                        key={pageNumber}
-                                                        className={currentPage === pageNumber ? 'active' : ''}
-                                                        onClick={() => setCurrentPage(pageNumber)}
-                                                    >
-                                                        {pageNumber}
-                                                    </button>
-                                                );
-                                            } else if (
-                                                (pageNumber === currentPage - 2 && currentPage > 3) ||
-                                                (pageNumber === currentPage + 2 && currentPage < totalPages - 2)
-                                            ) {
-                                                return <span key={pageNumber}>...</span>;
-                                            }
-                                            return null;
-                                        })}
-                                    </div>
-                                    <button onClick={handleNextPage} disabled={currentPage === totalPages}>→</button>
-                                </div>
-                            )}
+                            <Pagination
+                                filteredItems={filteredStudents}
+                                itemsPerPage={5}
+                            >
+                                {(currentStudents) => (
+                                    currentStudents && currentStudents.length > 0 ? (
+                                        currentStudents.map(student => (
+                                            <div key={student.id} className="student-card">
+                                                <div className="student-info">
+                                                    <div className="student-name">Student Name: {student.name}</div>
+                                                    <div className="student-details">Student ID: {student.id}</div>
+                                                    <div className="student-details">GPA: {student.gpa}</div>
+                                                    <div className="student-details">ECTS: {student.ectsEarned}</div>
+                                                </div>
+                                                <button className="view-details-btn" onClick={() => handleViewDetails(student.id)}>View Details</button>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="no-students">No students found.</div>
+                                    )
+                                )}
+                            </Pagination>
                         </div>
                     </>
                 ) : (

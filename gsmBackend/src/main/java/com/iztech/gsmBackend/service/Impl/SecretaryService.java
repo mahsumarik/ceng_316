@@ -13,6 +13,7 @@ import com.iztech.gsmBackend.repository.IDeanRepository;
 import com.iztech.gsmBackend.repository.ISecretaryRepository;
 import com.iztech.gsmBackend.repository.IStudentListRepository;
 import com.iztech.gsmBackend.repository.ITranscriptRepository;
+import com.iztech.gsmBackend.repository.IStudentRepository;
 import com.iztech.gsmBackend.service.INotificationService;
 import com.iztech.gsmBackend.service.ISecretaryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,9 @@ public class SecretaryService implements ISecretaryService {
 
     @Autowired
     private IDeanRepository deanRepository;
+
+    @Autowired
+    private IStudentRepository studentRepository;
     
     @Override
     public List<AdvisorStatusDto> getAdvisorStatusesByDepartment(String department) {
@@ -121,12 +125,18 @@ public class SecretaryService implements ISecretaryService {
 
         List<Student> approvedStudents = studentListRepository.findBySecretaryId(secretaryId).stream()
                 .flatMap(list -> list.getStudents().stream())
-                //.filter(s -> s.getSecretaryStatus() == STATUS.APPROVED)
+                .filter(student -> student.getAdvisorStatus() == STATUS.APPROVED)
                 .collect(Collectors.toList());
 
         if (approvedStudents.isEmpty()) {
             throw new RuntimeException("No approved students to send.");
         }
+
+        // Sadece dekan'a gönderilen öğrencilerin secretaryStatus'ünü APPROVED yap
+        approvedStudents.forEach(student -> {
+            student.setSecretaryStatus(STATUS.APPROVED);
+            studentRepository.save(student);
+        });
 
         Dean dean = deanRepository.findAll().stream()
                 .filter(d -> secretary.getFaculty().equalsIgnoreCase(d.getFaculty()))
@@ -135,7 +145,8 @@ public class SecretaryService implements ISecretaryService {
 
         byte[] newContent = serializeStudentList(approvedStudents);
 
-        List<StudentList> existingLists = studentListRepository.findByAdvisorIdAndSecretaryId(secretaryId, dean.getId());
+        List<StudentList> existingLists = studentListRepository.findBySecretaryIdAndDeanIdIsNotNull(secretaryId);
+        boolean isUpdate = !existingLists.isEmpty();
 
         for (StudentList list : existingLists) {
             if (Arrays.equals(list.getContent(), newContent)) {
@@ -159,7 +170,12 @@ public class SecretaryService implements ISecretaryService {
 
         studentListRepository.save(studentList);
 
-        String message = "Secretary " + secretary.getFirstName() + " " + secretary.getLastName() + " has sent the approved student list to Dean.";
+        String message;
+        if (isUpdate) {
+            message = "Secretary " + secretary.getFirstName() + " " + secretary.getLastName() + " has sent an updated student list to Dean's office.";
+        } else {
+            message = "Secretary " + secretary.getFirstName() + " " + secretary.getLastName() + " has sent the approved student list to Dean's office.";
+        }
         notificationService.sendNotification(dean.getId(), message);
     }
 

@@ -13,6 +13,7 @@ import java.util.List;
 @Setter
 public class StudentList extends Document {
 
+
     private String department; // Öğrencilerin ait olduğu bölüm
 
     private String faculty; // Öğrencilerin ait olduğu fakülte
@@ -29,6 +30,10 @@ public class StudentList extends Document {
     @JoinColumn(name = "dean_id")
     private Dean dean; // Dekan ile ilişki (Many-to-One)
 
+    @ManyToOne
+    @JoinColumn(name = "student_affair_id")
+    private StudentAffair studentAffair;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "student_list_students",
@@ -38,5 +43,6 @@ public class StudentList extends Document {
     private List<Student> students; // Öğrencilerin listesi
 
     private LocalDateTime creationDate; // Belgenin oluşturulma tarihi
+
 }
 
