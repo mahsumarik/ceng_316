@@ -38,4 +38,64 @@ public class StudentAffairController implements IStudentAffairController {
     public ResponseEntity<List<StudentDto>> getApprovedStudents(@RequestParam Long studentAffairId) {
         return ResponseEntity.ok(studentAffairService.getApprovedStudentsForStudentAffair(studentAffairId));
     }
+
+    @Override
+    @PostMapping("/prepare-diploma/{studentId}")
+    public ResponseEntity<byte[]> prepareDiploma(@PathVariable Long studentId, @RequestParam Long studentAffairId) {
+        byte[] pdf = studentAffairService.prepareDiploma(studentId, studentAffairId);
+        return ResponseEntity.ok()
+            .header("Content-Type", "application/pdf")
+            .header("Content-Disposition", "attachment; filename=diploma.pdf")
+            .body(pdf);
+    }
+
+    @Override
+    @DeleteMapping("/cancel-diploma/{studentId}")
+    public ResponseEntity<String> cancelDiploma(@PathVariable Long studentId) {
+        try {
+            studentAffairService.cancelDiploma(studentId);
+            return ResponseEntity.ok("Diploma cancelled and status reverted.");
+        } catch (Exception e) {
+            e.printStackTrace(); // Konsola hatayı yazdırır
+            return ResponseEntity.status(500).body("Error: " + e.getMessage());
+        }
+    }
+
+    @Override
+    @GetMapping("/diploma/{studentId}")
+    public ResponseEntity<byte[]> downloadDiploma(@PathVariable Long studentId) {
+        byte[] pdf = studentAffairService.getDiplomaPdf(studentId);
+        return ResponseEntity.ok()
+            .header("Content-Type", "application/pdf")
+            .header("Content-Disposition", "attachment; filename=diploma.pdf")
+            .body(pdf);
+    }
+
+    @Override
+    @GetMapping("/diploma/view/{studentId}")
+    public ResponseEntity<byte[]> viewDiploma(@PathVariable Long studentId) {
+        byte[] pdf = studentAffairService.getDiplomaPdf(studentId);
+        return ResponseEntity.ok()
+            .header("Content-Type", "application/pdf")
+                .body(pdf);
+    }
+
+    @Override
+    @GetMapping("/download-student-list")
+    public ResponseEntity<byte[]> downloadStudentList(@RequestParam Long studentAffairId) {
+        byte[] pdf = studentAffairService.getStudentListPdf(studentAffairId);
+        return ResponseEntity.ok()
+            .header("Content-Type", "application/pdf")
+            .header("Content-Disposition", "attachment; filename=student_list.pdf")
+            .body(pdf);
+    }
+
+    @GetMapping("/download-all-diplomas")
+    public ResponseEntity<byte[]> downloadAllDiplomas(@RequestParam Long studentAffairId) {
+        byte[] zip = studentAffairService.getAllDiplomasZip(studentAffairId);
+        return ResponseEntity.ok()
+            .header("Content-Type", "application/zip")
+            .header("Content-Disposition", "attachment; filename=all_diplomas.zip")
+            .body(zip);
+    }
 }

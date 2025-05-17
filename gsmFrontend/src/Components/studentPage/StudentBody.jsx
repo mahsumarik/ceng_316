@@ -147,6 +147,11 @@ const StudentBody = () => {
             ? 'red'
             : 'orange',
       },
+      {
+      label: 'Graduation Status',
+      status: studentData.graduationStatus === true ? 'APPROVED' : 'PENDING',
+      color: studentData.graduationStatus === true ? 'green' : 'orange',
+      },
     ];
   };
 

@@ -17,4 +17,5 @@ public class StudentDto {
     private String secretaryStatus;
     private String deanStatus;
     private String studentAffairStatus;
+    private Boolean graduationStatus;
 }

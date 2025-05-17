@@ -76,9 +76,87 @@ const StudentAffairBody = () => {
         setSelectedStudent(null);
     };
 
-    const handleDownloadAllDiplomas = () => {
-        // This will be implemented later
-        console.log('Downloading all diplomas');
+    const handleDownloadAllDiplomas = async () => {
+        try {
+            const response = await StudentAffairService.downloadAllDiplomas(userId);
+            const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/zip' }));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'all_diplomas.zip');
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (err) {
+            alert('Failed to download all diplomas.');
+        }
+    };
+
+    const handlePrepareDiploma = async (studentId) => {
+        try {
+            await StudentAffairService.prepareDiploma(studentId, userId);
+            console.log(studentId)
+            // Refresh students list to update status
+            const data = await StudentAffairService.getApprovedStudents(userId);
+            console.log(data)
+            console.log("sşldvmsklşv")
+            setStudents(data);
+            alert('Diploma prepared successfully!');
+        } catch (err) {
+            alert('Failed to prepare diploma.');
+        }
+    };
+
+    const handleCancelDiploma = async (studentId) => {
+    try {
+        await StudentAffairService.cancelDiploma(studentId);
+        const data = await StudentAffairService.getApprovedStudents(userId);
+        setStudents(data);
+        alert('Diploma cancelled.');
+    } catch (err) {
+        // Hata mesajını hem alert ile hem de console'a yaz
+        console.error('Cancel Diploma Error:', err, err.response?.data);
+        alert(err.response?.data || err.message || 'Failed to cancel diploma.');
+    }
+};
+
+    const handleDownloadDiploma = async (studentId) => {
+        try {
+            const response = await StudentAffairService.downloadDiploma(studentId);
+            const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'diploma.pdf');
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (err) {
+            alert('Failed to download diploma.');
+        }
+    };
+
+    const handleViewDiploma = async (studentId) => {
+        try {
+            const response = await StudentAffairService.viewDiploma(studentId);
+            const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+            window.open(url, '_blank');
+        } catch (err) {
+            alert('Failed to view diploma.');
+        }
+    };
+
+    const handleDownloadStudentList = async () => {
+        try {
+            const response = await StudentAffairService.downloadStudentList(userId);
+            const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'student_list.pdf');
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (err) {
+            alert('Failed to download student list.');
+        }
     };
 
     // Filter students based on search term
@@ -159,12 +237,21 @@ const StudentAffairBody = () => {
                     <>
                         <div className="section-header">
                             <h2>Student List</h2>
-                            <button 
-                                className="download-all-btn"
-                                onClick={handleDownloadAllDiplomas}
-                            >
-                                Download All Diplomas
-                            </button>
+                            <div>
+                                <button 
+                                    className="download-all-btn"
+                                    onClick={handleDownloadAllDiplomas}
+                                >
+                                    Download All Diplomas
+                                </button>
+                                <button 
+                                    className="download-all-btn"
+                                    style={{ marginLeft: '10px' }}
+                                    onClick={handleDownloadStudentList}
+                                >
+                                    Download Student List
+                                </button>
+                            </div>
                         </div>
                         <div className="search-section">
                             <label className="search-label">Search Student:</label>
@@ -192,7 +279,18 @@ const StudentAffairBody = () => {
                                                     <div className="student-details">Department: {student.department}</div>
                                                     <div className="student-details">Faculty: {student.faculty}</div>
                                                 </div>
-                                                <button className="view-details-btn" onClick={() => handleViewDetails(student.id)}>View Details</button>
+                                                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                                    <button className="view-details-btn" onClick={() => handleViewDetails(student.id)}>View Details</button>
+                                                    {student.studentAffairStatus === 'APPROVED' ? (
+                                                        <>
+                                                            <button className="view-details-btn" style={{ backgroundColor: '#28a745' }} onClick={() => handleDownloadDiploma(student.id)}>Download Diploma</button>
+                                                            <button className="view-details-btn" style={{ backgroundColor: '#17a2b8' }} onClick={() => handleViewDiploma(student.id)}>View Diploma</button>
+                                                            <button className="view-details-btn" style={{ backgroundColor: '#dc3545' }} onClick={() => handleCancelDiploma(student.id)}>Cancel Diploma</button>
+                                                        </>
+                                                    ) : (
+                                                        <button className="view-details-btn" style={{ backgroundColor: '#ffc107', color: '#333' }} onClick={() => handlePrepareDiploma(student.id)}>Prepare Diploma</button>
+                                                    )}
+                                                </div>
                                             </div>
                                         ))
                                     ) : (

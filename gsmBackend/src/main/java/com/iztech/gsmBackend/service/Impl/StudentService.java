@@ -85,6 +85,7 @@ public class StudentService implements IStudentService {
         dto.setDeanStatus(student.getDeanStatus() != null ? student.getDeanStatus().name() : "PENDING");
         dto.setStudentAffairStatus(student.getStudentAffairStatus() != null ? student.getStudentAffairStatus().name() : "PENDING");
         dto.setFaculty(student.getFaculty());
+        dto.setGraduationStatus(student.getGraduationStatus());
 
         if (student.getAdvisor() != null) {
             AdvisorDto advisorDto = new AdvisorDto();
