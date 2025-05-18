@@ -92,6 +92,7 @@ public class StudentAffairService implements IStudentAffairService {
                     return dto;
                 })
                 .distinct()
+                .sorted((s1, s2) -> Double.compare(s2.getGpa(), s1.getGpa()))
                 .collect(Collectors.toList());
     }
 
@@ -162,6 +163,7 @@ public class StudentAffairService implements IStudentAffairService {
                 .flatMap(list -> list.getStudents().stream())
                 .filter(student -> student.getDeanStatus() == STATUS.APPROVED)
                 .distinct()
+                .sorted((s1, s2) -> Double.compare(s2.getGpa(), s1.getGpa()))
                 .collect(Collectors.toList());
         return generateStudentListPdf(students);
     }

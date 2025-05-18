@@ -27,6 +27,12 @@ const ViewDetails = ({ student, setSelectedStudent, onStatusChange }) => {
     try {
       if (!user || !user.role) return;
 
+      // Eğer status APPROVED ve transkript yoksa
+      if (status === 'APPROVED' && !transcriptUrl) {
+        alert('Cannot approve student without transcript. Please wait for the student to upload their transcript.');
+        return;
+      }
+
       await StudentService.updateStatus(student.id, status, user.role);
 
       const updatedStudent = { ...student, advisorStatus: status };
@@ -37,6 +43,12 @@ const ViewDetails = ({ student, setSelectedStudent, onStatusChange }) => {
       if (onStatusChange) onStatusChange(updatedStudent);
     } catch (err) {
       console.error('Status update failed:', err);
+      // Backend'den gelen hata mesajını göster
+      if (err.response?.data) {
+        alert(err.response.data);
+      } else {
+        alert('Failed to update student status. Please try again.');
+      }
     }
   };
 

@@ -104,7 +104,12 @@ public class StudentService implements IStudentService {
                 .orElseThrow(() -> new RuntimeException("Student not found with id: " + studentId));
 
         switch (role) {
-            case ADVISOR -> student.setAdvisorStatus(status);
+            case ADVISOR -> {
+                if (status == STATUS.APPROVED && !transcriptRepository.existsByStudentId(studentId)) {
+                    throw new RuntimeException("Cannot approve student without transcript.");
+                }
+                student.setAdvisorStatus(status);
+            }
             case DEAN -> student.setDeanStatus(status);
             case SECRETARY -> student.setSecretaryStatus(status);
             case STUDENT_AFFAIRS -> student.setStudentAffairStatus(status);

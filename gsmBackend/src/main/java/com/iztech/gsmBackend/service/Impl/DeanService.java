@@ -95,6 +95,7 @@ public class DeanService implements IDeanService {
                     return dto;
                 })
                 .distinct()
+                .sorted((s1, s2) -> Double.compare(s2.getGpa(), s1.getGpa()))
                 .collect(Collectors.toList());
     }
 

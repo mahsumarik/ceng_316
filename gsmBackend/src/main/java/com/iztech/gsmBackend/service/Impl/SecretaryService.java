@@ -82,9 +82,7 @@ public class SecretaryService implements ISecretaryService {
 
     @Override
     public List<StudentDto> getApprovedStudentsForSecretary(Long secretaryId) {
-
         List<StudentList> lists = studentListRepository.findBySecretaryId(secretaryId);
-
 
         return lists.stream()
                 .flatMap(list -> list.getStudents().stream())
@@ -109,6 +107,7 @@ public class SecretaryService implements ISecretaryService {
                     return dto;
                 })
                 .distinct()
+                .sorted((s1, s2) -> Double.compare(s2.getGpa(), s1.getGpa()))
                 .collect(Collectors.toList());
     }
     @Override
