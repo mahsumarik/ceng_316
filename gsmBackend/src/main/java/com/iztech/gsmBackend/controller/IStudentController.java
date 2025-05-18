@@ -7,22 +7,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 import com.iztech.gsmBackend.model.Student;
+import com.iztech.gsmBackend.dto.StudentRankingDto;
 
 public interface IStudentController {
     ResponseEntity<String> uploadTranscript(Long studentId, MultipartFile file) throws Exception;
-
     ResponseEntity<byte[]> getTranscript(Long studentId);
-
     ResponseEntity<String> deleteTranscript(@PathVariable Long studentId);
 
     ResponseEntity<StudentDto> getStudentById(@PathVariable Long studentId);
     ResponseEntity<String> updateStudentStatus(@PathVariable Long studentId, STATUS status, ROLE role);
 
-    //ResponseEntity<String> approveStudent(@PathVariable Long studentId);
-
-    //ResponseEntity<String> rejectStudent(@PathVariable Long studentId);
-
-    //ResponseEntity<String> pendingStudent(@PathVariable Long studentId);
-
+    ResponseEntity<StudentRankingDto> getStudentRanking(@PathVariable Long studentId);
 
 }

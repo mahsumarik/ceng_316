@@ -2,6 +2,7 @@ package com.iztech.gsmBackend.controller.Impl;
 
 import com.iztech.gsmBackend.controller.IStudentController;
 import com.iztech.gsmBackend.dto.StudentDto;
+import com.iztech.gsmBackend.dto.StudentRankingDto;
 import com.iztech.gsmBackend.enums.ROLE;
 import com.iztech.gsmBackend.enums.STATUS;
 import com.iztech.gsmBackend.service.INotificationService;
@@ -74,6 +75,13 @@ public class StudentController implements IStudentController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Failed to update student status: " + e.getMessage());
         }
+    }
+
+    @Override
+    @GetMapping("/ranking/{studentId}")
+    public ResponseEntity<StudentRankingDto> getStudentRanking(@PathVariable Long studentId) {
+        StudentRankingDto ranking = studentService.getStudentRanking(studentId);
+        return ResponseEntity.ok(ranking);
     }
 
 }

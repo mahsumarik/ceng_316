@@ -1,6 +1,7 @@
 package com.iztech.gsmBackend.service;
 
 import com.iztech.gsmBackend.dto.StudentDto;
+import com.iztech.gsmBackend.dto.StudentRankingDto;
 import com.iztech.gsmBackend.enums.ROLE;
 import com.iztech.gsmBackend.enums.STATUS;
 import com.iztech.gsmBackend.model.Transcript;
@@ -19,4 +20,6 @@ public interface IStudentService {
     StudentDto getStudentById(Long studentId);
 
     void updateStudentStatus(Long studentId, STATUS status, ROLE role);
+
+    StudentRankingDto getStudentRanking(Long studentId);
 }

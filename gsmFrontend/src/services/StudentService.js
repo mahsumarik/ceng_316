@@ -33,8 +33,12 @@ const StudentService = {
       role: role,
     },
   });
-}
+},
 
+getStudentRanking: async (studentId) => {
+  const response = await api.get(`/students/ranking/${studentId}`);
+  return response.data;
+}
 
 };
 

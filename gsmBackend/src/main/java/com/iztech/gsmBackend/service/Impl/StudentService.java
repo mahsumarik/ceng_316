@@ -2,6 +2,7 @@ package com.iztech.gsmBackend.service.Impl;
 
 import com.iztech.gsmBackend.dto.AdvisorDto;
 import com.iztech.gsmBackend.dto.StudentDto;
+import com.iztech.gsmBackend.dto.StudentRankingDto;
 import com.iztech.gsmBackend.enums.ROLE;
 import com.iztech.gsmBackend.enums.STATUS;
 import com.iztech.gsmBackend.model.Student;
@@ -114,5 +115,39 @@ public class StudentService implements IStudentService {
         notificationService.sendStudentNotification(studentId, status.name());
     }
 
+    @Override
+    public StudentRankingDto getStudentRanking(Long studentId) {
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+        double gpa = student.getGpa() != null ? student.getGpa() : 0.0;
+        // Department
+        var departmentStudents = studentRepository.findAll().stream()
+                .filter(s -> student.getDepartment().equals(s.getDepartment()))
+                .sorted((a, b) -> Double.compare(b.getGpa() != null ? b.getGpa() : 0.0, a.getGpa() != null ? a.getGpa() : 0.0))
+                .toList();
+        int departmentRank = 1 + departmentStudents.indexOf(student);
+        int departmentTotal = departmentStudents.size();
+        // Faculty
+        var facultyStudents = studentRepository.findAll().stream()
+                .filter(s -> student.getFaculty().equals(s.getFaculty()))
+                .sorted((a, b) -> Double.compare(b.getGpa() != null ? b.getGpa() : 0.0, a.getGpa() != null ? a.getGpa() : 0.0))
+                .toList();
+        int facultyRank = 1 + facultyStudents.indexOf(student);
+        int facultyTotal = facultyStudents.size();
+        // University
+        var allStudents = studentRepository.findAll().stream()
+                .sorted((a, b) -> Double.compare(b.getGpa() != null ? b.getGpa() : 0.0, a.getGpa() != null ? a.getGpa() : 0.0))
+                .toList();
+        int universityRank = 1 + allStudents.indexOf(student);
+        int universityTotal = allStudents.size();
+        StudentRankingDto dto = new StudentRankingDto();
+        dto.setDepartmentRank(departmentRank);
+        dto.setDepartmentTotal(departmentTotal);
+        dto.setFacultyRank(facultyRank);
+        dto.setFacultyTotal(facultyTotal);
+        dto.setUniversityRank(universityRank);
+        dto.setUniversityTotal(universityTotal);
+        return dto;
+    }
 
 }

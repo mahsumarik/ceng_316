@@ -4,12 +4,6 @@ import { useAuth } from '../../context/AuthContext';
 import StudentService from '../../services/StudentService';
 import NotificationService from '../../services/NotificationService';
 
-const DUMMY_OVERALL = {
-  gpa: 3.75,
-  department: '--',
-  faculty: '--',
-  university: '--',
-};
 
 const DUMMY_TRANSCRIPT = null;
 
@@ -20,6 +14,7 @@ const StudentBody = () => {
   const fileInputRef = useRef();
   const [studentData, setStudentData] = useState(null);
   const [notifications, setNotifications] = useState([]);
+  const [ranking, setRanking] = useState(null);
 
   useEffect(() => {
     const fetchTranscript = async () => {
@@ -40,6 +35,8 @@ const StudentBody = () => {
       try {
         const data = await StudentService.getStudentDetails(userId);
         setStudentData(data);
+        const rankingData = await StudentService.getStudentRanking(userId);
+        setRanking(rankingData);
       } catch (err) {
         console.error("Student details fetch error", err);
       }
@@ -187,9 +184,9 @@ const StudentBody = () => {
                 <div className="overall-list">
                   <div><b>GPA</b> <span>{studentData?.gpa ?? '--'}</span></div>
                   <div><b>ECTS</b> <span>{studentData?.ectsEarned ?? '--'}</span></div>
-                  <div><b>Department Rating</b> <span>{DUMMY_OVERALL.department}</span></div>
-                  <div><b>Faculty Rating</b> <span>{DUMMY_OVERALL.faculty}</span></div>
-                  <div><b>University Rating</b> <span>{DUMMY_OVERALL.university}</span></div>
+                  <div><b>Department Ranking</b> <span>{ranking ? `${ranking.departmentRank} / ${ranking.departmentTotal}` : '--'}</span></div>
+                  <div><b>Faculty Ranking</b> <span>{ranking ? `${ranking.facultyRank} / ${ranking.facultyTotal}` : '--'}</span></div>
+                  <div><b>University Ranking</b> <span>{ranking ? `${ranking.universityRank} / ${ranking.universityTotal}` : '--'}</span></div>
                 </div>
               </section>
             </div>
