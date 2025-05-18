@@ -1,9 +1,7 @@
 package com.iztech.gsmBackend.model;
 
-import com.iztech.gsmBackend.enums.STATUS;
+
 import jakarta.persistence.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
 

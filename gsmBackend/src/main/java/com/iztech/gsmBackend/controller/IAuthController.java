@@ -7,7 +7,7 @@ import com.iztech.gsmBackend.dto.RegisterRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.Map;
+
 
 public interface IAuthController {
     ResponseEntity<?> register(@RequestBody RegisterRequest request);

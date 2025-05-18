@@ -1,8 +1,6 @@
 package com.iztech.gsmBackend.repository;
 
 import com.iztech.gsmBackend.model.Secretary;
-import com.iztech.gsmBackend.model.Student;
-import com.iztech.gsmBackend.model.StudentList;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

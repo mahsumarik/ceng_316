@@ -6,7 +6,6 @@ import com.iztech.gsmBackend.enums.STATUS;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
-import com.iztech.gsmBackend.model.Student;
 import com.iztech.gsmBackend.dto.StudentRankingDto;
 
 public interface IStudentController {
