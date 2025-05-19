@@ -111,16 +111,6 @@ public class DeanService implements IDeanService {
         Dean dean = deanRepository.findById(deanId)
                 .orElseThrow(() -> new RuntimeException("Dean not found"));
 
-        // 1. Tüm sekreterler bu deanin faculty'sinde mi student list gönderdi?
-        List<Secretary> secretaries = secretaryRepository.findAll().stream()
-                .filter(s -> dean.getFaculty().equalsIgnoreCase(s.getFaculty()))
-                .toList();
-        boolean allSecretariesSent = secretaries.stream()
-                .allMatch(secretary -> !studentListRepository.findBySecretaryIdAndDeanIdIsNotNull(secretary.getId()).isEmpty());
-        if (!allSecretariesSent) {
-            throw new RuntimeException("You cannot send the student list to Student Affairs until all secretaries in your faculty have sent their student lists.");
-        }
-
         // Sadece transcripti olan ve advisor/sekreter statusu APPROVED olan öğrenciler
         List<Student> approvedStudents = studentListRepository.findByDeanId(deanId).stream()
                 .flatMap(list -> list.getStudents().stream())

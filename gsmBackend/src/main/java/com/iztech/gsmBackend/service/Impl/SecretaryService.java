@@ -122,16 +122,6 @@ public class SecretaryService implements ISecretaryService {
         Secretary secretary = secretaryRepository.findById(secretaryId)
                 .orElseThrow(() -> new RuntimeException("Secretary not found"));
 
-        // 1. Tüm advisorlar bu sekreterin department'ında mı student list gönderdi?
-        List<Advisor> advisors = advisorRepository.findAll().stream()
-                .filter(a -> secretary.getDepartment().equalsIgnoreCase(a.getDepartment()))
-                .toList();
-        boolean allAdvisorsSent = advisors.stream()
-                .allMatch(advisor -> !studentListRepository.findByAdvisorIdAndSecretaryId(advisor.getId(), secretary.getId()).isEmpty());
-        if (!allAdvisorsSent) {
-            throw new RuntimeException("You cannot send the student list to the Dean until all advisors in your department have sent their student lists.");
-        }
-
         List<Student> approvedStudents = studentListRepository.findBySecretaryId(secretaryId).stream()
                 .flatMap(list -> list.getStudents().stream())
                 .filter(student -> student.getAdvisorStatus() == STATUS.APPROVED)
