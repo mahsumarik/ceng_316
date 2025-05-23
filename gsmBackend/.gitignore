@@ -7,6 +7,9 @@ target/
 # Spring Boot config
 gsmBackend/src/main/resources/application.properties
 
+# Environment Variables
+.env
+
 ### STS ###
 .apt_generated
 .classpath
