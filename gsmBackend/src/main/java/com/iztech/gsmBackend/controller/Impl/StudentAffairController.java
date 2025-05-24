@@ -41,22 +41,30 @@ public class StudentAffairController implements IStudentAffairController {
 
     @Override
     @PostMapping("/prepare-diploma/{studentId}")
+    @CrossOrigin(origins = {"https://ceng-316.vercel.app", "http://localhost:3000"})
     public ResponseEntity<byte[]> prepareDiploma(@PathVariable Long studentId, @RequestParam Long studentAffairId) {
-        byte[] pdf = studentAffairService.prepareDiploma(studentId, studentAffairId);
-        return ResponseEntity.ok()
-            .header("Content-Type", "application/pdf")
-            .header("Content-Disposition", "attachment; filename=diploma.pdf")
-            .body(pdf);
+        try {
+            byte[] pdf = studentAffairService.prepareDiploma(studentId, studentAffairId);
+            return ResponseEntity.ok()
+                .header("Content-Type", "application/pdf")
+                .header("Content-Disposition", "attachment; filename=diploma.pdf")
+                .header("Content-Length", String.valueOf(pdf.length))
+                .body(pdf);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(null);
+        }
     }
 
     @Override
     @DeleteMapping("/cancel-diploma/{studentId}")
+    @CrossOrigin(origins = {"https://ceng-316.vercel.app", "http://localhost:3000"})
     public ResponseEntity<String> cancelDiploma(@PathVariable Long studentId) {
         try {
             studentAffairService.cancelDiploma(studentId);
             return ResponseEntity.ok("Diploma cancelled and status reverted.");
         } catch (Exception e) {
-            e.printStackTrace(); // Konsola hatayı yazdırır
+            e.printStackTrace();
             return ResponseEntity.status(500).body("Error: " + e.getMessage());
         }
     }
@@ -64,20 +72,31 @@ public class StudentAffairController implements IStudentAffairController {
     @Override
     @GetMapping("/diploma/{studentId}")
     public ResponseEntity<byte[]> downloadDiploma(@PathVariable Long studentId) {
-        byte[] pdf = studentAffairService.getDiplomaPdf(studentId);
-        return ResponseEntity.ok()
-            .header("Content-Type", "application/pdf")
-            .header("Content-Disposition", "attachment; filename=diploma.pdf")
-            .body(pdf);
+        try {
+            byte[] pdf = studentAffairService.getDiplomaPdf(studentId);
+            return ResponseEntity.ok()
+                .header("Content-Type", "application/pdf")
+                .header("Content-Disposition", "attachment; filename=diploma.pdf")
+                .header("Content-Length", String.valueOf(pdf.length))
+                .body(pdf);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(null);
+        }
     }
 
     @Override
     @GetMapping("/diploma/view/{studentId}")
     public ResponseEntity<byte[]> viewDiploma(@PathVariable Long studentId) {
-        byte[] pdf = studentAffairService.getDiplomaPdf(studentId);
-        return ResponseEntity.ok()
-            .header("Content-Type", "application/pdf")
+        try {
+            byte[] pdf = studentAffairService.getDiplomaPdf(studentId);
+            return ResponseEntity.ok()
+                .header("Content-Type", "application/pdf")
+                .header("Content-Length", String.valueOf(pdf.length))
+                .header("Content-Disposition", "inline; filename=diploma.pdf")
                 .body(pdf);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(null);
+        }
     }
 
     @Override

@@ -129,22 +129,29 @@ public class StudentAffairService implements IStudentAffairService {
 
     @Override
     public void cancelDiploma(Long studentId) {
-        System.out.println("Cancel diploma called for studentId: " + studentId);
-        Student student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new RuntimeException("Student not found"));
-        Diploma diploma = diplomaRepository.findByStudentId(studentId);
-        if (diploma != null) {
-            // Önce student'dan diploma referansını kaldır
-            student.setDiploma(null);
-            studentRepository.save(student);
-            //System.out.println("Diploma found and will be deleted for studentId: " + studentId);
-            diplomaRepository.delete(diploma);
-        } else {
-            System.out.println("No diploma found for studentId: " + studentId);
+        try {
+            Student student = studentRepository.findById(studentId)
+                    .orElseThrow(() -> new RuntimeException("Student not found"));
+            
+            Diploma diploma = diplomaRepository.findByStudentId(studentId);
+            if (diploma != null) {
+                // First remove the diploma reference from student
+                student.setDiploma(null);
+                student.setStudentAffairStatus(STATUS.PENDING);
+                student.setGraduationStatus(false);
+                studentRepository.save(student);
+                
+                // Then delete the diploma
+                diplomaRepository.delete(diploma);
+                
+                // Send notification to student
+                notificationService.sendNotification(studentId, "Your diploma has been cancelled.");
+            } else {
+                throw new RuntimeException("No diploma found for this student.");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to cancel diploma: " + e.getMessage());
         }
-        student.setStudentAffairStatus(STATUS.PENDING);
-        student.setGraduationStatus(false);
-        studentRepository.save(student);
     }
 
     @Override
