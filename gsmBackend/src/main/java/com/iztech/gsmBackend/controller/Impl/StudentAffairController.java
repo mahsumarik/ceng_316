@@ -40,8 +40,19 @@ public class StudentAffairController implements IStudentAffairController {
     }
 
     @Override
-    @PostMapping("/prepare-diploma/{studentId}")
-    @CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.POST, RequestMethod.OPTIONS})
+    @RequestMapping(value = "/cancel-diploma/{studentId}", method = {RequestMethod.DELETE, RequestMethod.OPTIONS})
+    public ResponseEntity<String> cancelDiploma(@PathVariable Long studentId) {
+        try {
+            studentAffairService.cancelDiploma(studentId);
+            return ResponseEntity.ok("Diploma cancelled and status reverted.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error: " + e.getMessage());
+        }
+    }
+
+    @Override
+    @RequestMapping(value = "/prepare-diploma/{studentId}", method = {RequestMethod.POST, RequestMethod.OPTIONS})
     public ResponseEntity<byte[]> prepareDiploma(@PathVariable Long studentId, @RequestParam Long studentAffairId) {
         try {
             byte[] pdf = studentAffairService.prepareDiploma(studentId, studentAffairId);
@@ -58,21 +69,7 @@ public class StudentAffairController implements IStudentAffairController {
     }
 
     @Override
-    @DeleteMapping("/cancel-diploma/{studentId}")
-    @CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.DELETE, RequestMethod.OPTIONS})
-    public ResponseEntity<String> cancelDiploma(@PathVariable Long studentId) {
-        try {
-            studentAffairService.cancelDiploma(studentId);
-            return ResponseEntity.ok("Diploma cancelled and status reverted.");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body("Error: " + e.getMessage());
-        }
-    }
-
-    @Override
-    @GetMapping("/diploma/{studentId}")
-    @CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.OPTIONS})
+    @RequestMapping(value = "/diploma/{studentId}", method = {RequestMethod.GET, RequestMethod.OPTIONS})
     public ResponseEntity<byte[]> downloadDiploma(@PathVariable Long studentId) {
         try {
             byte[] pdf = studentAffairService.getDiplomaPdf(studentId);
@@ -89,8 +86,7 @@ public class StudentAffairController implements IStudentAffairController {
     }
 
     @Override
-    @GetMapping("/diploma/view/{studentId}")
-    @CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.OPTIONS})
+    @RequestMapping(value = "/diploma/view/{studentId}", method = {RequestMethod.GET, RequestMethod.OPTIONS})
     public ResponseEntity<byte[]> viewDiploma(@PathVariable Long studentId) {
         try {
             byte[] pdf = studentAffairService.getDiplomaPdf(studentId);
