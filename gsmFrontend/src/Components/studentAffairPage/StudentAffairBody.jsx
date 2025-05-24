@@ -87,7 +87,7 @@ const StudentAffairBody = () => {
             link.click();
             link.remove();
         } catch (err) {
-            alert('Failed to download all diplomas.');
+            alert('Failed to download all diplomas.'); 
         }
     };
 
