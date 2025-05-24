@@ -4,6 +4,7 @@ const baseURL = process.env.REACT_APP_API_URL?.replace(/\/$/, '') || '';
 
 const api = axios.create({
   baseURL: baseURL + "/api",
+  withCredentials: true
 });
 
 // Her istek öncesi localStorage'daki JWT'yi tak
