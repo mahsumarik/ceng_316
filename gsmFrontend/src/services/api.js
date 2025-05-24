@@ -1,7 +1,9 @@
 import axios from "axios";
 
+const baseURL = process.env.REACT_APP_API_URL?.replace(/\/$/, '') || '';
+
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL + "/api",
+  baseURL: baseURL + "/api",
 });
 
 // Her istek öncesi localStorage'daki JWT'yi tak
