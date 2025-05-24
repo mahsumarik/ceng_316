@@ -41,7 +41,7 @@ public class StudentAffairController implements IStudentAffairController {
 
     @Override
     @PostMapping("/prepare-diploma/{studentId}")
-    @CrossOrigin(origins = {"https://ceng-316.vercel.app", "http://localhost:3000"})
+    @CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.POST, RequestMethod.OPTIONS})
     public ResponseEntity<byte[]> prepareDiploma(@PathVariable Long studentId, @RequestParam Long studentAffairId) {
         try {
             byte[] pdf = studentAffairService.prepareDiploma(studentId, studentAffairId);
@@ -49,6 +49,7 @@ public class StudentAffairController implements IStudentAffairController {
                 .header("Content-Type", "application/pdf")
                 .header("Content-Disposition", "attachment; filename=diploma.pdf")
                 .header("Content-Length", String.valueOf(pdf.length))
+                .header("Access-Control-Expose-Headers", "Content-Disposition, Content-Length")
                 .body(pdf);
         } catch (Exception e) {
             e.printStackTrace();
@@ -58,7 +59,7 @@ public class StudentAffairController implements IStudentAffairController {
 
     @Override
     @DeleteMapping("/cancel-diploma/{studentId}")
-    @CrossOrigin(origins = {"https://ceng-316.vercel.app", "http://localhost:3000"})
+    @CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.DELETE, RequestMethod.OPTIONS})
     public ResponseEntity<String> cancelDiploma(@PathVariable Long studentId) {
         try {
             studentAffairService.cancelDiploma(studentId);
@@ -71,6 +72,7 @@ public class StudentAffairController implements IStudentAffairController {
 
     @Override
     @GetMapping("/diploma/{studentId}")
+    @CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.OPTIONS})
     public ResponseEntity<byte[]> downloadDiploma(@PathVariable Long studentId) {
         try {
             byte[] pdf = studentAffairService.getDiplomaPdf(studentId);
@@ -78,23 +80,28 @@ public class StudentAffairController implements IStudentAffairController {
                 .header("Content-Type", "application/pdf")
                 .header("Content-Disposition", "attachment; filename=diploma.pdf")
                 .header("Content-Length", String.valueOf(pdf.length))
+                .header("Access-Control-Expose-Headers", "Content-Disposition, Content-Length")
                 .body(pdf);
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(500).body(null);
         }
     }
 
     @Override
     @GetMapping("/diploma/view/{studentId}")
+    @CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.OPTIONS})
     public ResponseEntity<byte[]> viewDiploma(@PathVariable Long studentId) {
         try {
             byte[] pdf = studentAffairService.getDiplomaPdf(studentId);
             return ResponseEntity.ok()
                 .header("Content-Type", "application/pdf")
-                .header("Content-Length", String.valueOf(pdf.length))
                 .header("Content-Disposition", "inline; filename=diploma.pdf")
+                .header("Content-Length", String.valueOf(pdf.length))
+                .header("Access-Control-Expose-Headers", "Content-Disposition, Content-Length")
                 .body(pdf);
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(500).body(null);
         }
     }

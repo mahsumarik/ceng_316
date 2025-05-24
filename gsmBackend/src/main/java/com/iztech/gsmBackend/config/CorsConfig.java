@@ -14,10 +14,10 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("https://ceng-316.vercel.app", "http://localhost:3000")
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
+                        .allowedOriginPatterns("*")
+                        .allowedMethods("*")
                         .allowedHeaders("*")
-                        .exposedHeaders("Content-Type", "Content-Disposition", "Content-Length")
+                        .exposedHeaders("*")
                         .allowCredentials(true)
                         .maxAge(3600);
             }
